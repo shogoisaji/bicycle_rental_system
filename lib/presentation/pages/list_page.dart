@@ -13,7 +13,6 @@ class _DetailPageState extends State<ListPage> {
 
   initState() {
     super.initState();
-    authService.checkUserLoggedIn();
   }
 
   @override
