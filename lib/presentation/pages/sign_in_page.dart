@@ -10,10 +10,16 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        height: 300,
-        width: double.infinity,
-      ),
-    );
+        body: Column(
+      children: [
+        Text('sign in page'),
+        ElevatedButton(
+            onPressed: () {
+              //list pageに遷移
+              Navigator.pushNamed(context, '/list');
+            },
+            child: Text('list page'))
+      ],
+    ));
   }
 }
