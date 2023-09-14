@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "203340254867",
+    "project_id": "bicycle-rental-system-c4471",
+    "storage_bucket": "bicycle-rental-system-c4471.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203340254867:android:b7a03e555a4f3a089cc766",
+        "android_client_info": {
+          "package_name": "com.example.bicycle_rental_system"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203340254867-f01n6unpp1vsodmutmc4omg416jcjkdp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkqZt9Gej0YLBEPDeOUXIcrWCJ6RoPjtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203340254867-f01n6unpp1vsodmutmc4omg416jcjkdp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "203340254867-ahfjl4j9ue3feuni015ifq909itecpb2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bicycleRentalSystem"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
