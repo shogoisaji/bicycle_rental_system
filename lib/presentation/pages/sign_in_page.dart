@@ -94,6 +94,12 @@ class _SignInPageState extends State<SignInPage> {
                     child: Image.asset('assets/images/google_signin.png',
                         fit: BoxFit.cover)),
               ),
+              SizedBox(height: 100),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/list');
+                  },
+                  child: Text('Test List Page')),
             ],
           ),
         ));

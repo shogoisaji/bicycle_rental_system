@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MyTheme {
-  static Color lemon = const Color(0xFFE5FF70);
-  static Color beige = const Color(0xFFFFE8C6);
-  static Color grey = const Color(0xFF6F6F6F);
+  static Color purple = const Color(0xFF9C83FF);
+  static Color celeste = const Color(0xFFb2ffff);
+  static Color grey = const Color(0xFFD9D9D9);
   static Color lightGrey = const Color(0xFFECECEC);
 
   static Color orange = const Color(0xFFFF974C);

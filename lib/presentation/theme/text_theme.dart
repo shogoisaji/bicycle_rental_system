@@ -7,25 +7,32 @@ Widget boldText(String text, Color color, double fontSize) {
         fontSize: fontSize,
         fontWeight: FontWeight.w700,
         color: color,
-      ));
+      ),
+      overflow: TextOverflow.ellipsis);
 }
 
 Widget mediumText(String text, Color color, double fontSize) {
-  return Text(text,
-      style: GoogleFonts.zenKakuGothicNew(
-        fontSize: fontSize,
-        fontWeight: FontWeight.w500,
-        color: color,
-      ));
+  return Text(
+    text,
+    style: GoogleFonts.zenKakuGothicNew(
+      fontSize: fontSize,
+      fontWeight: FontWeight.w500,
+      color: color,
+    ),
+    overflow: TextOverflow.ellipsis,
+  );
 }
 
 Widget regularText(String text, Color color, double fontSize) {
-  return Text(text,
-      style: GoogleFonts.zenKakuGothicNew(
-        fontSize: fontSize,
-        fontWeight: FontWeight.w400,
-        color: color,
-      ));
+  return Text(
+    text,
+    style: GoogleFonts.zenKakuGothicNew(
+      fontSize: fontSize,
+      fontWeight: FontWeight.w400,
+      color: color,
+    ),
+    // overflow: TextOverflow.ellipsis
+  );
 }
 
 Widget lightText(String text, Color color, double fontSize) {
@@ -34,5 +41,6 @@ Widget lightText(String text, Color color, double fontSize) {
         fontSize: fontSize,
         fontWeight: FontWeight.w300,
         color: color,
-      ));
+      ),
+      overflow: TextOverflow.ellipsis);
 }

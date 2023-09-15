@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'BICYCLE RENTAL',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
       home: SignInPage(),
       routes: {
         '/list': (context) => ListPage(),
-        '/detail': (context) => DetailPage(),
+        // '/detail': (context) => DetailPage(),
         '/account': (context) => AccountPage(),
         '/config': (context) => ConfigPage(),
         '/sign_in': (context) => SignInPage(),

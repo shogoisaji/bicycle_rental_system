@@ -1,0 +1,2 @@
+double BREAKPOINT1 = 700;
+double BREAKPOINT2 = 1400;
