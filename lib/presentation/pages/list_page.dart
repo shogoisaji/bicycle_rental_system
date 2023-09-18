@@ -1,10 +1,15 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
+import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/time_tag.dart';
+import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
+import 'package:bicycle_rental_system/presentation/pages/registration_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/item_card.dart';
 import 'package:bicycle_rental_system/presentation/widgets/time_tag_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -15,14 +20,46 @@ class ListPage extends StatefulWidget {
 
 class _DetailPageState extends State<ListPage> {
   TimeTag timeTagState = TimeTag.hour;
+  FirebaseService firebase = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
+    firebase.fetchAllData();
+    StateController stateController = Get.find();
     double mWidth = MediaQuery.of(context).size.width;
+    int columnCount = 1;
+    if (mWidth > BREAKPOINT2) {
+      columnCount = 3;
+    } else if (mWidth > BREAKPOINT1) {
+      columnCount = 2;
+    } else {
+      columnCount = 1;
+    }
 
     return Scaffold(
         drawer: Drawer(
           backgroundColor: MyTheme.lightBlue,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.directions_bike),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegistrationPage()),
+                          );
+                        },
+                        child: Text('Registration')),
+                  ],
+                )
+              ],
+            ),
+          ),
         ),
         appBar: AppBar(
             iconTheme: IconThemeData(color: Colors.white),
@@ -38,24 +75,38 @@ class _DetailPageState extends State<ListPage> {
               child: Stack(
                 children: [
                   Container(
-                    child: GridView.builder(
-                      itemCount: 20,
-                      padding: EdgeInsets.all(20 * (mWidth / 600)),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisSpacing: 20 * (mWidth / 800), //ボックス左右間のスペース
-                        mainAxisSpacing: 20 * (mWidth / 800), //ボックス上下間のスペース
-                        crossAxisCount: mWidth > BREAKPOINT2
-                            ? 3
-                            : (mWidth > BREAKPOINT1 ? 2 : 1), //横に並べるボックス数
-                      ),
-                      itemBuilder: (context, index) {
-                        return ItemCard(
-                          index: index,
-                          timeTagState: timeTagState,
-                        );
-                      },
-                    ),
-                  ),
+                      child: FutureBuilder(
+                          future: firebase.fetchAllData(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              List<DocumentSnapshot> docs = snapshot.data!;
+                              return GridView.builder(
+                                itemCount: docs.length,
+                                padding: EdgeInsets.all(20 * (mWidth / 600)),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisSpacing:
+                                            20 * (mWidth / 800), //ボックス左右間のスペース
+                                        mainAxisSpacing:
+                                            0 * (mWidth / 800), //ボックス上下間のスペース
+                                        crossAxisCount: columnCount //横に並べるボックス数
+                                        ),
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: index % columnCount == 1
+                                        ? const EdgeInsets.only(top: 72.0)
+                                        : const EdgeInsets.only(bottom: 72.0),
+                                    child: ItemCard(
+                                      productId: docs[index]['productId'],
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                          })),
 // time tag
                   Positioned(
                     top: 10,
@@ -83,30 +134,28 @@ class _DetailPageState extends State<ListPage> {
                               children: [
                                 InkWell(
                                     onTap: () {
-                                      setState(() {
-                                        timeTagState = TimeTag.month;
-                                      });
+                                      stateController
+                                          .changeTimeTagState(TimeTag.month);
+                                      setState(() {});
                                     },
-                                    child: timeTagButton(TimeTag.month,
-                                        timeTagState == TimeTag.month)),
+                                    child: timeTagButton(TimeTag.month)),
                               ],
                             ),
                             InkWell(
                                 onTap: () {
-                                  setState(() {
-                                    timeTagState = TimeTag.day;
-                                  });
+                                  stateController
+                                      .changeTimeTagState(TimeTag.day);
+                                  print(stateController.timeTagState);
+                                  setState(() {});
                                 },
-                                child: timeTagButton(
-                                    TimeTag.day, timeTagState == TimeTag.day)),
+                                child: timeTagButton(TimeTag.day)),
                             InkWell(
                                 onTap: () {
-                                  setState(() {
-                                    timeTagState = TimeTag.hour;
-                                  });
+                                  stateController
+                                      .changeTimeTagState(TimeTag.hour);
+                                  setState(() {});
                                 },
-                                child: timeTagButton(TimeTag.hour,
-                                    timeTagState == TimeTag.hour)),
+                                child: timeTagButton(TimeTag.hour)),
                           ]),
                     ),
                   )
@@ -118,7 +167,24 @@ class _DetailPageState extends State<ListPage> {
               width: mWidth * 0.3,
               color: MyTheme.lightBlue,
               child: Column(
-                children: [Text('aaaaaaaaaaa')],
+                children: [
+                  // SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(height: 3, color: Colors.white),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.shopping_cart,
+                            color: Colors.white, size: 32),
+                      ),
+                      Expanded(
+                        child: Container(height: 3, color: Colors.white),
+                      ),
+                    ],
+                  )
+                ],
               ),
             )
           ],

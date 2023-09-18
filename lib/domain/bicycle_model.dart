@@ -1,25 +1,15 @@
 class Bicycle {
-  final String id;
-  final String name;
+  final int productId;
+  final String productName;
   final String description;
-  final String image;
-  final int price;
+  final String imageUrl;
+  final int pricePerHour;
 
   Bicycle({
-    required this.id,
-    required this.name,
+    required this.productId,
+    required this.productName,
     required this.description,
-    required this.image,
-    required this.price,
+    required this.imageUrl,
+    required this.pricePerHour,
   });
-
-  factory Bicycle.fromJson(Map<String, dynamic> json) {
-    return Bicycle(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      image: json['image'],
-      price: json['price'],
-    );
-  }
 }

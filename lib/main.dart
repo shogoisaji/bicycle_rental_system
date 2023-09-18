@@ -1,17 +1,17 @@
+import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/firebase_options.dart';
-import 'package:bicycle_rental_system/presentation/pages/account_page.dart';
-import 'package:bicycle_rental_system/presentation/pages/config_page.dart';
-import 'package:bicycle_rental_system/presentation/pages/detail_page.dart';
-import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
+import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/presentation/pages/sign_in_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+  ).then((value) => Get.put(AuthController()));
+  Get.put(StateController());
   runApp(MyApp());
 }
 
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BICYCLE RENTAL',
       theme: ThemeData(
@@ -29,13 +29,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: SignInPage(),
-      routes: {
-        '/list': (context) => ListPage(),
-        // '/detail': (context) => DetailPage(),
-        '/account': (context) => AccountPage(),
-        '/config': (context) => ConfigPage(),
-        '/sign_in': (context) => SignInPage(),
-      },
+      initialRoute: '/',
+      getPages: [
+        GetPage(name: '/', page: () => SignInPage()),
+      ],
     );
   }
 }

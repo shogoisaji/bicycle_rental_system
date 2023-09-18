@@ -12,20 +12,19 @@ dependencies:
   go_router:
   google_sign_in:
   google_fonts:
-  flutter_riverpod:
   firebase_auth:
   cloud_firestore:
   path_provider: any
-  riverpod_annotation: ^2.1.1
   image_picker:
   firebase_core: ^2.15.1
   intl: ^0.18.1
+  flutter_staggered_grid_view: ^0.7.0
+  get:
+  firebase_storage:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner:
-  riverpod_generator:
 
 flutter:
   uses-material-design: true

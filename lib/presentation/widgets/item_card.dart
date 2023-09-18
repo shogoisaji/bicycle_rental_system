@@ -1,23 +1,25 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
+import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/time_tag.dart';
+import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/detail_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemCard extends StatefulWidget {
-  // String bicycleName;
-  // int price;
-  int index;
-  TimeTag timeTagState;
-  ItemCard(
-      {super.key,
-      // required this.bicycleName,
-      // required this.price,
-      required this.index,
-      required this.timeTagState});
+  int productId;
+
+  ItemCard({
+    super.key,
+    // required this.bicycleName,
+    // required this.price,
+    required this.productId,
+  });
 
   @override
   State<ItemCard> createState() => _ItemCardState();
@@ -25,116 +27,122 @@ class ItemCard extends StatefulWidget {
 
 class _ItemCardState extends State<ItemCard> {
   var f = NumberFormat("#,###");
-
-  Bicycle getBicycle() {
-    return Bicycle(
-      id: 'id',
-      name: 'name',
-      description: 'description',
-      image: 'image',
-      price: 1500,
-    );
-  }
+  FirebaseService firebase = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
+    StateController stateController = Get.find<StateController>();
+    String unit = stateController.unit;
     double mWidth = MediaQuery.of(context).size.width;
     double cardWidth = 0;
-    int showPrice = 0;
-    String unit = '';
     double rate = 0;
 
     if (mWidth > BREAKPOINT2) {
       cardWidth = mWidth / 3;
-      rate = cardWidth / 700;
+      rate = cardWidth / BREAKPOINT1;
     } else if (mWidth > BREAKPOINT1) {
       cardWidth = mWidth / 2;
-      rate = cardWidth / 700;
+      rate = cardWidth / BREAKPOINT1;
     } else {
       cardWidth = mWidth;
-      rate = cardWidth / 700;
+      rate = cardWidth / BREAKPOINT1;
     }
 
-// set showPrice and unit
-    switch (widget.timeTagState) {
-      case TimeTag.month:
-        unit = TimeTag.month.unit;
-        showPrice = getBicycle().price * 28 * 24;
-        break;
-      case TimeTag.day:
-        unit = TimeTag.day.unit;
-        showPrice = getBicycle().price * 23;
-        break;
-      case TimeTag.hour:
-        unit = TimeTag.hour.unit;
-        showPrice = getBicycle().price;
-        break;
-    }
-
-    return Container(
-        decoration: BoxDecoration(
-          color: MyTheme.grey,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(15 * rate),
-          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Container(
-                  padding: EdgeInsets.all(15),
-                  color: Colors.white,
-                  child: InkWell(
-                    onTap: () {
-                      // Navigator.pushNamed(context, '/detail');
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailPage(index: widget.index),
-                        ),
-                      );
-                    },
-                    child: Image.asset(
-                      'assets/images/sample_bicycle.png',
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
+    return FutureBuilder(
+        future:
+            firebase.fetchDocumentData('product${widget.productId.toString()}'),
+        builder: (BuildContext context,
+            AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+          if (snapshot.hasData) {
+            Map<String, dynamic> data = snapshot.data!;
+            return Container(
+                decoration: BoxDecoration(
+                  color: MyTheme.grey,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    mediumText(getBicycle().name, Colors.black, 24 * rate),
-                    boldText('\$ ${f.format(showPrice)}/${unit}', Colors.black,
-                        24 * rate),
-                  ],
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      //
-                    },
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.symmetric(
-                              horizontal: 20 * rate, vertical: 15 * rate)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(MyTheme.purple),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: EdgeInsets.all(15 * rate),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 15),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailPage(productId: widget.productId),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.network(
+                                  data['imageUrl'],
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    child: boldText('SELECT', Colors.white, 24 * rate))
-              ],
-            )
-          ]),
-        ));
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  mediumText(data['productName'], Colors.black,
+                                      24 * rate),
+                                  boldText(
+                                      '\$ ${f.format(data['pricePerHour'] * stateController.priceRate)}/${unit}',
+                                      Colors.black,
+                                      24 * rate),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  //
+                                },
+                                style: ButtonStyle(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          EdgeInsets.symmetric(
+                                              horizontal: 20 * rate,
+                                              vertical: 15 * rate)),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          MyTheme.purple),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                                child:
+                                    boldText('SELECT', Colors.white, 24 * rate))
+                          ],
+                        )
+                      ]),
+                ));
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }

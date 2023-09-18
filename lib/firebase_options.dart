@@ -23,7 +23,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for iOS - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -46,7 +49,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
+  static FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyD-GdLgLzVGqmp25tG8cul7q3DzRVFA5EA',
     appId: '1:203340254867:web:43bafcef0da3e2679cc766',
     messagingSenderId: '203340254867',
@@ -56,21 +59,11 @@ class DefaultFirebaseOptions {
     measurementId: 'G-RF7TLNBQF8',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAkqZt9Gej0YLBEPDeOUXIcrWCJ6RoPjtQ',
     appId: '1:203340254867:android:b7a03e555a4f3a089cc766',
     messagingSenderId: '203340254867',
     projectId: 'bicycle-rental-system-c4471',
     storageBucket: 'bicycle-rental-system-c4471.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCxdbgTBj3A7AHb7lvEIXH91bxYHXUty-Y',
-    appId: '1:203340254867:ios:cd251e12b16d15f79cc766',
-    messagingSenderId: '203340254867',
-    projectId: 'bicycle-rental-system-c4471',
-    storageBucket: 'bicycle-rental-system-c4471.appspot.com',
-    iosClientId: '203340254867-ahfjl4j9ue3feuni015ifq909itecpb2.apps.googleusercontent.com',
-    iosBundleId: 'com.example.bicycleRentalSystem',
   );
 }
