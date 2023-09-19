@@ -1,3 +1,5 @@
+import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
+import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    StateController stateController = Get.find();
     FirebaseService firebase = FirebaseService();
     TextEditingController _nameController = TextEditingController();
     TextEditingController _descriptionController = TextEditingController();
@@ -36,12 +39,14 @@ class RegistrationPage extends StatelessWidget {
             controller: _priceController,
             decoration: InputDecoration(
               labelText: 'price per hour',
-              hintText: 'Enter price',
+              hintText: 'Enter price per hour',
             ),
           ),
           ElevatedButton(
               onPressed: () async {
                 memory = await firebase.pickImage();
+                if (memory == null) return;
+                stateController.setMemory(memory!);
               },
               child: Text('image')),
           ElevatedButton(
@@ -57,11 +62,14 @@ class RegistrationPage extends StatelessWidget {
                   );
                   return;
                 }
-                bool success = await firebase.registrationData(
-                    _nameController.text,
-                    _descriptionController.text,
-                    memory!,
-                    int.parse(_priceController.text));
+                int productId = await firebase.incrementCounter();
+                Bicycle bicycle = Bicycle(
+                    productId: productId,
+                    productName: _nameController.text,
+                    description: _descriptionController.text,
+                    imageUrl: '',
+                    pricePerHour: int.parse(_priceController.text));
+                bool success = await firebase.registrationData(bicycle);
                 if (success) {
                   Get.to(() => ListPage());
                 } else {

@@ -2,7 +2,7 @@ class Bicycle {
   final int productId;
   final String productName;
   final String description;
-  final String imageUrl;
+  String imageUrl;
   final int pricePerHour;
 
   Bicycle({

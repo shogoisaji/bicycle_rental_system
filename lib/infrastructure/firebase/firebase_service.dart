@@ -1,4 +1,6 @@
 import 'package:bicycle_rental_system/application/config/date_format.dart';
+import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
+import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 class FirebaseService {
   final db = FirebaseFirestore.instance;
   final String currentDate = getCurrentDate();
+  StateController stateController = Get.find();
 
 // firestore fetch all data
   Future<List<DocumentSnapshot>?> fetchAllData() async {
@@ -54,23 +57,25 @@ class FirebaseService {
   }
 
 // Firestoreにデータを登録する関数
-  Future<bool> registrationData(String productName, String description,
-      Uint8List imageMemory, int price) async {
+  Future<bool> registrationData(Bicycle bicycle) async {
     // get productId
-    int productId = await incrementCounter();
+    // int productId = await incrementCounter();
     // upload image to firebase storage & get imageUrl
     String imageUrl = await uploadImage(
-        productId, imageMemory, productId.toString() + productName);
+        bicycle.productId,
+        stateController.memory!,
+        bicycle.productId.toString() + bicycle.productName);
+    bicycle.imageUrl = imageUrl;
 
     var result = await FirebaseFirestore.instance
         .collection('items')
-        .doc('product$productId')
+        .doc('product${bicycle.productId}')
         .set({
-      'productId': productId,
-      'productName': productName,
-      'description': description,
+      'productId': bicycle.productId,
+      'productName': bicycle.productName,
+      'description': bicycle.description,
       'imageUrl': imageUrl,
-      'pricePerHour': price,
+      'pricePerHour': bicycle.pricePerHour,
     }).then((void value) {
       return true;
     }).catchError((error) {
