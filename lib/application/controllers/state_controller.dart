@@ -1,43 +1,40 @@
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
-import 'package:bicycle_rental_system/domain/cart_item.dart';
-import 'package:bicycle_rental_system/domain/time_tag.dart';
+import 'package:bicycle_rental_system/domain/time_unit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class StateController extends GetxController {
+  // put() is defined in main()
   static StateController instance = Get.find();
 
-// Time Tag State
-  TimeTag _timeTagState = TimeTag.hour;
+// Time Unit State
+  Rx<TimeUnit> timeUnitState = TimeUnit.hour.obs;
 
-  void changeTimeTagState(TimeTag timeTag) {
-    _timeTagState = timeTag;
+  void changeTimeTagState(TimeUnit timeUnit) {
+    timeUnitState.value = timeUnit;
+    calculateTotalPrice();
     update();
   }
 
-  TimeTag get timeTagState {
-    return _timeTagState;
-  }
-
   String get unit {
-    switch (_timeTagState) {
-      case TimeTag.month:
+    switch (timeUnitState.value) {
+      case TimeUnit.month:
         return 'M';
-      case TimeTag.day:
+      case TimeUnit.day:
         return 'D';
-      case TimeTag.hour:
+      case TimeUnit.hour:
         return 'H';
     }
   }
 
   int get priceRate {
-    switch (_timeTagState) {
-      case TimeTag.month:
+    switch (timeUnitState.value) {
+      case TimeUnit.month:
         return 10 * 13;
-      case TimeTag.day:
+      case TimeUnit.day:
         return 10;
-      case TimeTag.hour:
+      case TimeUnit.hour:
         return 1;
     }
   }
@@ -57,10 +54,11 @@ class StateController extends GetxController {
 // cart
   List<dynamic> cart = [].obs;
   RxInt totalPrice = 0.obs;
+  RxInt rentPeriod = 1.obs;
 
   void addCart(Bicycle bicycle) {
-    for (CartItem c in cart) {
-      if (c.bicycle.productId == bicycle.productId) {
+    for (Bicycle b in cart) {
+      if (b.productId == bicycle.productId) {
         print('already added');
         Get.snackbar(
           'Already added',
@@ -73,17 +71,21 @@ class StateController extends GetxController {
         return;
       }
     }
-    CartItem cartItem = CartItem(bicycle: bicycle, rentPeriod: 1);
-    cart.add(cartItem);
+    cart.add(bicycle);
     calculateTotalPrice();
     update();
-    print(cartItem.bicycle.productName);
+    print('add cart : ${bicycle.productName}');
   }
 
-  void removeCart(CartItem cartItem) {
-    cart.remove(cartItem);
+  void removeCart(Bicycle bicycle) {
+    cart.remove(bicycle);
+    if (cart.isEmpty) {
+      rentPeriod.value = 0;
+      print('cart is empty');
+    }
     calculateTotalPrice();
     update();
+    print('remove cart : ${bicycle.productName}');
   }
 
   void clearCart() {
@@ -94,28 +96,31 @@ class StateController extends GetxController {
 
   void calculateTotalPrice() {
     int total = 0;
-    for (CartItem c in cart) {
-      total += c.bicycle.pricePerHour * c.rentPeriod * priceRate;
+    for (Bicycle b in cart) {
+      total += b.pricePerHour * priceRate * rentPeriod.value;
     }
     totalPrice.value = total;
     print(totalPrice.value);
     update();
   }
 
-  void addRentPeriod(CartItem cartItem) async {
-    cartItem.rentPeriod++;
+  void addRentPeriod() async {
+    if (cart.isEmpty) {
+      return;
+    }
+    rentPeriod.value++;
     calculateTotalPrice();
     update();
-    print(cartItem.rentPeriod);
+    print('add rentPeriod : ${rentPeriod.value}');
   }
 
-  void removeRentPeriod(CartItem cartItem) {
-    if (cartItem.rentPeriod == 1) {
-      removeCart(cartItem);
+  void removeRentPeriod() {
+    if (rentPeriod.value <= 1) {
+      return;
     }
-    cartItem.rentPeriod--;
+    rentPeriod.value--;
     calculateTotalPrice();
     update();
-    print(cartItem.rentPeriod);
+    print('remove rentPeriod : ${rentPeriod.value}');
   }
 }

@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ItemCard extends StatefulWidget {
-  Bicycle bicycle;
+  final Bicycle bicycle;
 
   ItemCard({
     super.key,
@@ -63,7 +63,7 @@ class _ItemCardState extends State<ItemCard> {
                       borderRadius: BorderRadius.circular(15),
                       color: Colors.white,
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 15),
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15),
                     child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(
@@ -77,7 +77,7 @@ class _ItemCardState extends State<ItemCard> {
                         borderRadius: BorderRadius.circular(15),
                         child: Image.network(
                           widget.bicycle.imageUrl,
-                          fit: BoxFit.fitHeight,
+                          fit: BoxFit.fitWidth,
                         ),
                       ),
                     ),
@@ -96,10 +96,10 @@ class _ItemCardState extends State<ItemCard> {
                         children: [
                           mediumText(widget.bicycle.productName, Colors.black,
                               24 * rate),
-                          boldText(
+                          Obx(() => boldText(
                               '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${unit}',
                               Colors.black,
-                              24 * rate),
+                              24 * rate)),
                         ],
                       ),
                     ),
