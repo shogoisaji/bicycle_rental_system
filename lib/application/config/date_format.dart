@@ -16,15 +16,15 @@ String formatForDisplay(String isoDateString) {
   final hour = dateTime.hour;
   final minute = dateTime.minute;
 
-  return '$year.${month.toString().padLeft(1, '0')}.${day.toString().padLeft(1, '0')}  ${hour.toString().padLeft(1, '0')}:${minute.toString().padLeft(1, '0')}';
+  return '$year.${month.toString().padLeft(1, '0')}.${day.toString().padLeft(1, '0')}  ${hour.toString().padLeft(1, '0')}:${minute.toString().padLeft(2, '0')}';
 }
 
 String formatForDateTime(DateTime dateTime) {
-  final year = dateTime.year;
+  final year = dateTime.year % 100;
   final month = dateTime.month;
   final day = dateTime.day;
   final hour = dateTime.hour;
   final minute = dateTime.minute;
 
-  return '$year.${month.toString().padLeft(1, '0')}.${day.toString().padLeft(1, '0')}  ${hour.toString().padLeft(1, '0')}:${minute.toString().padLeft(1, '0')}';
+  return '\'$year.${month.toString().padLeft(2, '0')}.${day.toString().padLeft(2, '0')} ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 }

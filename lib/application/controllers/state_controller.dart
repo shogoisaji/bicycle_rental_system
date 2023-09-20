@@ -1,3 +1,4 @@
+import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/time_unit.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,17 @@ class StateController extends GetxController {
     }
   }
 
+  String get unitString {
+    switch (timeUnitState.value) {
+      case TimeUnit.month:
+        return 'month';
+      case TimeUnit.day:
+        return 'day';
+      case TimeUnit.hour:
+        return 'hour';
+    }
+  }
+
   int get priceRate {
     switch (timeUnitState.value) {
       case TimeUnit.month:
@@ -55,6 +67,7 @@ class StateController extends GetxController {
   List<dynamic> cart = [].obs;
   RxInt totalPrice = 0.obs;
   RxInt rentPeriod = 1.obs;
+  Rx<DateTime> rentStartDate = DateTime.now().obs;
 
   void addCart(Bicycle bicycle) {
     for (Bicycle b in cart) {
@@ -110,6 +123,11 @@ class StateController extends GetxController {
     }
     rentPeriod.value++;
     calculateTotalPrice();
+
+    if (totalPrice.value > 999999) {
+      rentPeriod.value--;
+      calculateTotalPrice();
+    }
     update();
     print('add rentPeriod : ${rentPeriod.value}');
   }

@@ -6,7 +6,7 @@ Widget cartPeriodCount() {
   StateController stateController = Get.find();
 
   return Container(
-    width: 120,
+    width: 100,
     height: 30,
     child: Stack(
       children: [
@@ -52,7 +52,7 @@ Widget cartPeriodCount() {
         Align(
           alignment: Alignment.center,
           child: Container(
-            width: 60,
+            width: 50,
             height: 30,
             decoration: BoxDecoration(
               color: Colors.white,

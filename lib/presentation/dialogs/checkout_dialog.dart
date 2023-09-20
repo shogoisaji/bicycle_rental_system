@@ -12,32 +12,34 @@ class CheckoutDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     StateController stateController = Get.find<StateController>();
 
-    String rentalPeriod() {
-      DateTime currentDate = DateTime.now();
+    String rentEndDate() {
+      DateTime rentStartDate = stateController.rentStartDate.value;
+      DateTime rentEndDate;
       if (stateController.timeUnitState == TimeUnit.month) {
-        DateTime rentalPeriod = currentDate
+        rentEndDate = rentStartDate
             .add(Duration(days: stateController.rentPeriod.value * 30));
-        return formatForDateTime(rentalPeriod);
+        return formatForDateTime(rentEndDate);
       } else if (stateController.timeUnitState == TimeUnit.day) {
-        DateTime rentalPeriod =
-            currentDate.add(Duration(days: stateController.rentPeriod.value));
-        return formatForDateTime(rentalPeriod);
+        rentEndDate =
+            rentStartDate.add(Duration(days: stateController.rentPeriod.value));
+        return formatForDateTime(rentEndDate);
       } else {
-        DateTime rentalPeriod =
-            currentDate.add(Duration(hours: stateController.rentPeriod.value));
-        return formatForDateTime(rentalPeriod);
+        rentEndDate = rentStartDate
+            .add(Duration(hours: stateController.rentPeriod.value));
+        return formatForDateTime(rentEndDate);
       }
     }
 
     return AlertDialog(
       title: boldText('Check Rental Info', Colors.black, 24),
       content: Container(
-        height: 220,
-        width: 180,
+        padding: EdgeInsets.only(left: 16),
+        height: 300,
+        width: 100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Rental Bicycle'),
+            boldText('Rental Bicycle', Colors.black, 16),
             Expanded(
               child: ListView.builder(
                 itemCount: stateController.cart.length,
@@ -46,14 +48,19 @@ class CheckoutDialog extends StatelessWidget {
                 },
               ),
             ),
-            Text('Rental Period'),
-            Text('・${rentalPeriod()}'),
-            Text(
-                '・${stateController.rentPeriod.value} ${stateController.unit}'),
             SizedBox(
               height: 16,
             ),
-            Text('Total Price'),
+            boldText('Rental Period', Colors.black, 16),
+            Text('・${formatForDateTime(stateController.rentStartDate.value)}'),
+            Text('          ↓'),
+            Text('　${rentEndDate()}'),
+            Text(
+                '・${stateController.rentPeriod.value} ${stateController.unitString}'),
+            SizedBox(
+              height: 16,
+            ),
+            boldText('Total Price', Colors.black, 16),
             Text('・￥${f.format(stateController.totalPrice.value)}'),
           ],
         ),
@@ -64,7 +71,7 @@ class CheckoutDialog extends StatelessWidget {
               Navigator.pop(context);
             },
             child: Text('Cancel')),
-        TextButton(
+        ElevatedButton(
             onPressed: () {
               // rental save firebase
             },

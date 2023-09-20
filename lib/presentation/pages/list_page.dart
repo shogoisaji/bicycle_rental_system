@@ -1,7 +1,7 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
+import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
-import 'package:bicycle_rental_system/domain/time_unit.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/dialogs/checkout_dialog.dart';
 import 'package:bicycle_rental_system/presentation/pages/cart_page.dart';
@@ -11,7 +11,6 @@ import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/cart_into_card.dart';
 import 'package:bicycle_rental_system/presentation/widgets/cart_period_count.dart';
 import 'package:bicycle_rental_system/presentation/widgets/item_card.dart';
-import 'package:bicycle_rental_system/presentation/widgets/time_tag_button.dart';
 import 'package:bicycle_rental_system/presentation/widgets/time_unit_selector.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +45,34 @@ class _DetailPageState extends State<ListPage> {
       index1padding = (mWidth - BREAKPOINT1) / 8 + 70;
     } else {
       columnCount = 2;
+    }
+
+    Future<void> _selectDateTime(BuildContext context) async {
+      final DateTime? selectedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2023),
+        lastDate: DateTime(2033),
+      );
+
+      if (selectedDate != null) {
+        final TimeOfDay? selectedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+
+        if (selectedTime != null) {
+          DateTime selectedDateTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute);
+
+          // pickedで選択した日時をセット
+          stateController.rentStartDate.value = selectedDateTime;
+        }
+      }
     }
 
     return Scaffold(
@@ -231,16 +258,46 @@ class _DetailPageState extends State<ListPage> {
 // right under checkout
                             Container(
                                 color: MyTheme.blue,
-                                padding: EdgeInsets.all(10),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: mWidth < 800 ? 10 : 20),
                                 child: Column(
                                   children: [
-                                    cartPeriodCount(),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        cartPeriodCount(),
+                                        InkWell(
+                                          onTap: () {
+                                            _selectDateTime(context);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 6, horizontal: 8),
+                                            child: Obx(
+                                              () => mediumText(
+                                                  formatForDateTime(
+                                                      stateController
+                                                          .rentStartDate.value),
+                                                  Colors.black,
+                                                  16),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                     SizedBox(
-                                      height: 18,
+                                      height: 16,
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         ElevatedButton(
                                             onPressed: () {
