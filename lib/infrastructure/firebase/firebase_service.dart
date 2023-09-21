@@ -103,7 +103,7 @@ class FirebaseService {
   Future<bool> registrationData(Bicycle bicycle) async {
     String imageUrl = await uploadImage(
         bicycle.productId,
-        stateController.memory!,
+        stateController.memory.value!,
         bicycle.productId.toString() + bicycle.productName);
     bicycle.imageUrl = imageUrl;
 

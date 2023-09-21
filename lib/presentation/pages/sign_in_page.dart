@@ -36,8 +36,8 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 20),
-                boldText('Welcome back', Colors.black, 32),
+                SizedBox(height: 30),
+                boldText('Welcome back', Colors.grey, 32),
                 SizedBox(height: 20),
                 Container(
                   width: 300,

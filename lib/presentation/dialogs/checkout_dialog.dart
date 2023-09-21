@@ -2,7 +2,6 @@ import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/rent_data.dart';
-import 'package:bicycle_rental_system/domain/time_unit.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
@@ -16,24 +15,6 @@ class CheckoutDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     StateController stateController = Get.find<StateController>();
     MyDateFormat dateFormat = MyDateFormat();
-
-    // String rentEndDate() {
-    //   DateTime rentStartDate = stateController.rentStartDate.value;
-    //   DateTime rentEndDate;
-    //   if (stateController.timeUnitState == TimeUnit.month) {
-    //     rentEndDate = rentStartDate
-    //         .add(Duration(days: stateController.rentPeriod.value * 30));
-    //     return dateFormat.formatForDateTime(rentEndDate);
-    //   } else if (stateController.timeUnitState == TimeUnit.day) {
-    //     rentEndDate =
-    //         rentStartDate.add(Duration(days: stateController.rentPeriod.value));
-    //     return dateFormat.formatForDateTime(rentEndDate);
-    //   } else {
-    //     rentEndDate = rentStartDate
-    //         .add(Duration(hours: stateController.rentPeriod.value));
-    //     return dateFormat.formatForDateTime(rentEndDate);
-    //   }
-    // }
 
     return AlertDialog(
       title: boldText('Check Rental Info', Colors.black, 24),

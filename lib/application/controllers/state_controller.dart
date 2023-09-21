@@ -54,16 +54,17 @@ class StateController extends GetxController {
   }
 
 // image
-  Uint8List? _memory;
+  Rx<Uint8List> memory = Uint8List(0).obs;
+  RxBool isImageSelected = false.obs;
 
-  void setMemory(Uint8List memory) {
-    _memory = memory;
-    update();
-  }
+  // void setMemory(Uint8List memory) {
+  //   _memory = memory;
+  //   update();
+  // }
 
-  Uint8List? get memory {
-    return _memory;
-  }
+  // Uint8List? get memory {
+  //   return _memory;
+  // }
 
 // cart
   List<dynamic> cart = [].obs;
@@ -105,6 +106,7 @@ class StateController extends GetxController {
 
   void clearCart() {
     cart.clear();
+    rentPeriod.value = 1;
     calculateTotalPrice();
     update();
   }
