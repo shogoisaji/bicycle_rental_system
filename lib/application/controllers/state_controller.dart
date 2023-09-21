@@ -1,4 +1,3 @@
-import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/time_unit.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,9 @@ import 'package:get/get.dart';
 class StateController extends GetxController {
   // put() is defined in main()
   static StateController instance = Get.find();
+
+// User
+  Rx<String> userName = 'user name'.obs;
 
 // Time Unit State
   Rx<TimeUnit> timeUnitState = TimeUnit.hour.obs;
@@ -93,7 +95,7 @@ class StateController extends GetxController {
   void removeCart(Bicycle bicycle) {
     cart.remove(bicycle);
     if (cart.isEmpty) {
-      rentPeriod.value = 0;
+      rentPeriod.value = 1;
       print('cart is empty');
     }
     calculateTotalPrice();
@@ -117,7 +119,7 @@ class StateController extends GetxController {
     update();
   }
 
-  void addRentPeriod() async {
+  void addRentalPeriod() async {
     if (cart.isEmpty) {
       return;
     }
@@ -132,7 +134,7 @@ class StateController extends GetxController {
     print('add rentPeriod : ${rentPeriod.value}');
   }
 
-  void removeRentPeriod() {
+  void removeRentalPeriod() {
     if (rentPeriod.value <= 1) {
       return;
     }

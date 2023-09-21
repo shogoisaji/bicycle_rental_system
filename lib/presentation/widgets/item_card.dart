@@ -42,7 +42,7 @@ class _ItemCardState extends State<ItemCard> {
       rate = cardWidth / BREAKPOINT1;
     } else {
       cardWidth = mWidth;
-      rate = cardWidth / BREAKPOINT1;
+      rate = cardWidth / BREAKPOINT1 * 1.5;
     }
 
     return FadeAnimation(
@@ -97,7 +97,7 @@ class _ItemCardState extends State<ItemCard> {
                           mediumText(widget.bicycle.productName, Colors.black,
                               24 * rate),
                           Obx(() => boldText(
-                              '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${unit}',
+                              '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${stateController.unit}',
                               Colors.black,
                               24 * rate)),
                         ],

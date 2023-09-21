@@ -4,8 +4,10 @@ import 'package:bicycle_rental_system/application/controllers/state_controller.d
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/dialogs/checkout_dialog.dart';
+import 'package:bicycle_rental_system/presentation/pages/account_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/cart_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/registration_page.dart';
+import 'package:bicycle_rental_system/presentation/pages/rental_list_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/cart_into_card.dart';
@@ -26,13 +28,13 @@ class ListPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<ListPage> {
-  // TimeUnit timeTagState = TimeUnit.hour;
   FirebaseService firebase = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
     var f = NumberFormat("#,###");
     StateController stateController = Get.find();
+    MyDateFormat dateFormat = MyDateFormat();
 
     double mWidth = MediaQuery.of(context).size.width;
     double index1padding = 100;
@@ -69,7 +71,6 @@ class _DetailPageState extends State<ListPage> {
               selectedTime.hour,
               selectedTime.minute);
 
-          // pickedで選択した日時をセット
           stateController.rentStartDate.value = selectedDateTime;
         }
       }
@@ -79,7 +80,7 @@ class _DetailPageState extends State<ListPage> {
         drawer: Drawer(
           backgroundColor: MyTheme.lightBlue,
           child: Padding(
-            padding: const EdgeInsets.only(top: 32.0, left: 48),
+            padding: const EdgeInsets.only(top: 100.0, left: 48),
             child: Column(
               children: [
                 Row(
@@ -96,7 +97,42 @@ class _DetailPageState extends State<ListPage> {
                         child: Text('Registration',
                             style: TextStyle(fontSize: 24))),
                   ],
-                )
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.directions_bike),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RentalListPage()),
+                          );
+                        },
+                        child: Text('Rental List',
+                            style: TextStyle(fontSize: 24))),
+                  ],
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.directions_bike),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AccountPage()),
+                          );
+                        },
+                        child: Text('Account', style: TextStyle(fontSize: 24))),
+                  ],
+                ),
               ],
             ),
           ),
@@ -145,8 +181,11 @@ class _DetailPageState extends State<ListPage> {
             ],
             iconTheme: IconThemeData(color: Colors.white),
             title: Padding(
-                padding: const EdgeInsets.only(left: 60),
-                child: boldText('BICYCLE RENTAL', Colors.white, 32)),
+                padding: mWidth < BREAKPOINT1
+                    ? const EdgeInsets.all(0)
+                    : const EdgeInsets.only(left: 60),
+                child: boldText('BICYCLE RENTAL', Colors.white,
+                    mWidth < BREAKPOINT1 ? 28 : 32)),
             backgroundColor: MyTheme.blue,
             elevation: 0),
         body: Row(
@@ -282,7 +321,7 @@ class _DetailPageState extends State<ListPage> {
                                                 vertical: 6, horizontal: 8),
                                             child: Obx(
                                               () => mediumText(
-                                                  formatForDateTime(
+                                                  dateFormat.formatForDateTime(
                                                       stateController
                                                           .rentStartDate.value),
                                                   Colors.black,

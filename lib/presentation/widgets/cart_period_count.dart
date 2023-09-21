@@ -15,7 +15,7 @@ Widget cartPeriodCount() {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  stateController.removeRentPeriod();
+                  stateController.removeRentalPeriod();
                 },
                 child: Container(
                     alignment: Alignment.centerLeft,
@@ -34,7 +34,7 @@ Widget cartPeriodCount() {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  stateController.addRentPeriod();
+                  stateController.addRentalPeriod();
                 },
                 child: Container(
                     alignment: Alignment.centerRight,

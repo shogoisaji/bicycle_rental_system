@@ -1,7 +1,8 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
+import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
-import 'package:bicycle_rental_system/domain/time_unit.dart';
+import 'package:bicycle_rental_system/presentation/pages/cart_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/cart_into_card.dart';
@@ -9,7 +10,6 @@ import 'package:bicycle_rental_system/presentation/widgets/cart_period_count.dar
 import 'package:bicycle_rental_system/presentation/widgets/time_unit_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class DetailPage extends StatefulWidget {
   final Bicycle bicycle;
@@ -20,9 +20,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  TimeUnit timeTagState = TimeUnit.hour;
-  var f = NumberFormat("#,###");
-
   @override
   Widget build(BuildContext context) {
     double mWidth = MediaQuery.of(context).size.width;
@@ -42,15 +39,21 @@ class _DetailPageState extends State<DetailPage> {
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
           title: Padding(
-              padding: const EdgeInsets.only(left: 100),
-              child: boldText('BICYCLE RENTAL', Colors.white, 32)),
+              padding: mWidth < BREAKPOINT1
+                  ? const EdgeInsets.all(0)
+                  : const EdgeInsets.only(left: 60),
+              child: boldText(
+                  'DETAIL', Colors.white, mWidth < BREAKPOINT1 ? 28 : 32)),
           backgroundColor: MyTheme.blue,
           elevation: 0,
           actions: [
             InkWell(
                 onTap: () {
-                  //
-                  print('go to cart');
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CartPage(),
+                    ),
+                  );
                 },
                 child: Container(
                   margin: EdgeInsets.all(8),
@@ -130,7 +133,7 @@ class _DetailPageState extends State<DetailPage> {
                                 itemBuilder: (BuildContext context, int index) {
                                   return Container(
                                     margin: EdgeInsets.all(8),
-                                    padding: EdgeInsets.all(8),
+                                    padding: EdgeInsets.all(2),
                                     width: 70,
                                     height: 70,
                                     child: Image.network(
@@ -153,7 +156,7 @@ class _DetailPageState extends State<DetailPage> {
                                 },
                               ),
                             ),
-                            // under card
+// under card
                             Stack(
                               children: [
                                 Container(
@@ -181,7 +184,9 @@ class _DetailPageState extends State<DetailPage> {
                                                       widget
                                                           .bicycle.productName,
                                                       Colors.black,
-                                                      32),
+                                                      mWidth < BREAKPOINT1
+                                                          ? 24
+                                                          : 32),
                                                   SizedBox(
                                                     height: 20,
                                                   ),
@@ -206,7 +211,9 @@ class _DetailPageState extends State<DetailPage> {
                                             child: Obx(() => boldText(
                                                 '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${stateController.unit}',
                                                 Colors.black,
-                                                32))),
+                                                mWidth < BREAKPOINT1
+                                                    ? 24
+                                                    : 32))),
                                         Positioned(
                                           bottom: 0,
                                           right: 0,

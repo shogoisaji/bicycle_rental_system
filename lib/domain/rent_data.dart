@@ -1,20 +1,20 @@
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/time_unit.dart';
 
-class RentData {
+class RentalData {
+  final int rentID;
   final Bicycle bicycle;
-  final String rentDate;
+  final String rentStartDate;
   final int rentPeriod;
-  final TimeUnit timeTag;
-  final String currentRentUser;
-  final String previousRentUser;
+  final TimeUnit timeUnit;
+  final String rentUser;
 
-  RentData({
+  RentalData({
+    required this.rentID,
     required this.bicycle,
-    required this.rentDate,
+    required this.rentStartDate,
     required this.rentPeriod,
-    required this.timeTag,
-    required this.currentRentUser,
-    required this.previousRentUser,
+    required this.timeUnit,
+    required this.rentUser,
   });
 }

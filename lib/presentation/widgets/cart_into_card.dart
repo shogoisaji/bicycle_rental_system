@@ -3,7 +3,6 @@ import 'package:bicycle_rental_system/application/controllers/state_controller.d
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
-import 'package:bicycle_rental_system/presentation/widgets/cart_period_count.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +25,6 @@ class _CartIntoCardState extends State<CartIntoCard> {
   @override
   Widget build(BuildContext context) {
     StateController stateController = Get.find<StateController>();
-    String unit = stateController.unit;
 
     return FadeAnimation(
         delay: 0.5,

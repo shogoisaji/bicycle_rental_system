@@ -1,3 +1,4 @@
+import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/presentation/dialogs/checkout_dialog.dart';
@@ -14,12 +15,46 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     StateController stateController = Get.find<StateController>();
+    double mWidth = MediaQuery.of(context).size.width;
+    MyDateFormat dateFormat = MyDateFormat();
+
+    Future<void> _selectDateTime(BuildContext context) async {
+      final DateTime? selectedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2023),
+        lastDate: DateTime(2033),
+      );
+
+      if (selectedDate != null) {
+        final TimeOfDay? selectedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        );
+
+        if (selectedTime != null) {
+          DateTime selectedDateTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute);
+
+          // pickedで選択した日時をセット
+          stateController.rentStartDate.value = selectedDateTime;
+        }
+      }
+    }
+
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
           title: Padding(
-              padding: const EdgeInsets.only(left: 100),
-              child: boldText('MY CART', Colors.white, 32)),
+              padding: mWidth < BREAKPOINT1
+                  ? const EdgeInsets.all(0)
+                  : const EdgeInsets.only(left: 60),
+              child: boldText(
+                  'MY CART', Colors.white, mWidth < BREAKPOINT1 ? 28 : 32)),
           backgroundColor: MyTheme.blue,
           elevation: 0,
         ),
@@ -77,7 +112,7 @@ class CartPage extends StatelessWidget {
                                                 Colors.black,
                                                 32),
                                             mediumText(
-                                                '￥${f.format(stateController.cart[index].pricePerHour)}/${stateController.unit}',
+                                                '￥${f.format(stateController.cart[index].pricePerHour * stateController.priceRate)}/${stateController.unit}',
                                                 Colors.black,
                                                 24)
                                           ],
@@ -113,6 +148,29 @@ class CartPage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Column(
                   children: [
+                    InkWell(
+                      onTap: () {
+                        _selectDateTime(context);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                        child: Obx(
+                          () => mediumText(
+                              dateFormat.formatForDateTime(
+                                  stateController.rentStartDate.value),
+                              Colors.black,
+                              16),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
                     SizedBox(
                       width: 330,
                       child: Row(

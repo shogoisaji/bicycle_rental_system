@@ -62,7 +62,7 @@ class RegistrationPage extends StatelessWidget {
                   );
                   return;
                 }
-                int productId = await firebase.incrementCounter();
+                int productId = await firebase.incrementBicycleId();
                 Bicycle bicycle = Bicycle(
                     productId: productId,
                     productName: _nameController.text,
