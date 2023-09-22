@@ -8,9 +8,6 @@ class StateController extends GetxController {
   // put() is defined in main()
   static StateController instance = Get.find();
 
-// User
-  Rx<String> userName = 'user name'.obs;
-
 // Time Unit State
   Rx<TimeUnit> timeUnitState = TimeUnit.hour.obs;
 

@@ -7,7 +7,6 @@ import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/account_text_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:supercharged/supercharged.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});

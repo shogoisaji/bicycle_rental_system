@@ -1,3 +1,4 @@
+import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/sign_in_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,10 +12,15 @@ class AuthController extends GetxController {
 
   late Rx<User?> _user;
   Rx<bool> isAdmin = false.obs;
+  Rx<String> loginUserName = 'none'.obs;
 
   FirebaseAuth auth = FirebaseAuth.instance;
 
   String getUid() {
+    return _user.value!.uid;
+  }
+
+  String getUserName() {
     return _user.value!.uid;
   }
 
@@ -27,11 +33,16 @@ class AuthController extends GetxController {
     ever(_user, _initialScreen);
   }
 
-  _initialScreen(User? user) {
+  _initialScreen(User? user) async {
     if (user == null) {
       Get.offAll(() => SignInPage());
     } else {
       Get.offAll(() => ListPage());
+      await FirebaseService().fetchUserData(user.uid).then((value) {
+        if (value != null) {
+          loginUserName.value = value['userName'];
+        }
+      });
     }
   }
 
@@ -43,7 +54,8 @@ class AuthController extends GetxController {
           .collection('userData')
           .doc(user.user!.uid)
           .set({
-        'Email': email,
+        'userName': email,
+        'userEmail': email,
       });
     } catch (e) {
       Get.snackbar(

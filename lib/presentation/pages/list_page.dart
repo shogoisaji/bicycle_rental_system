@@ -160,6 +160,16 @@ class _DetailPageState extends State<ListPage> {
         ),
         appBar: AppBar(
             actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AccountPage(),
+                    ),
+                  );
+                },
+                child: Obx(() => Text(authController.loginUserName.value)),
+              ),
               InkWell(
                   onTap: () {
                     //

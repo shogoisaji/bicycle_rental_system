@@ -1,4 +1,5 @@
 import 'package:bicycle_rental_system/application/config/date_format.dart';
+import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/rent_data.dart';
@@ -13,7 +14,8 @@ class CheckoutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    StateController stateController = Get.find<StateController>();
+    StateController stateController = Get.find();
+    AuthController authController = Get.find();
     MyDateFormat dateFormat = MyDateFormat();
 
     return AlertDialog(
@@ -79,7 +81,7 @@ class CheckoutDialog extends StatelessWidget {
                 RentalData rentData = RentalData(
                   rentalID: rentalID,
                   bicycleID: b.productId,
-                  rentalUserID: stateController.userName.value,
+                  rentalUserID: authController.loginUserName.value,
                   rentalStartDate:
                       stateController.rentStartDate.value.toIso8601String(),
                   rentalEndDate: rentalEndDate,

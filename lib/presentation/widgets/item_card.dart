@@ -29,7 +29,6 @@ class _ItemCardState extends State<ItemCard> {
   @override
   Widget build(BuildContext context) {
     StateController stateController = Get.find<StateController>();
-    String unit = stateController.unit;
     double mWidth = MediaQuery.of(context).size.width;
     double cardWidth = 0;
     double rate = 0;
