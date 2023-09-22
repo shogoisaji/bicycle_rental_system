@@ -1,5 +1,5 @@
 class Bicycle {
-  final int productId;
+  final String productId;
   final String productName;
   final String description;
   String imageUrl;

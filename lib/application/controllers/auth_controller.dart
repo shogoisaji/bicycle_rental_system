@@ -1,5 +1,6 @@
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/sign_in_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,8 +10,13 @@ class AuthController extends GetxController {
   static AuthController instance = Get.find();
 
   late Rx<User?> _user;
+  Rx<bool> isAdmin = false.obs;
 
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  String getUid() {
+    return _user.value!.uid;
+  }
 
   @override
   void onReady() {
@@ -31,8 +37,14 @@ class AuthController extends GetxController {
 
   void register(String email, String password) async {
     try {
-      await auth.createUserWithEmailAndPassword(
+      UserCredential user = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
+      await FirebaseFirestore.instance
+          .collection('userData')
+          .doc(user.user!.uid)
+          .set({
+        'Email': email,
+      });
     } catch (e) {
       Get.snackbar(
         "Error",

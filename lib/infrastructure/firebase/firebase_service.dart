@@ -1,8 +1,8 @@
 import 'package:bicycle_rental_system/application/config/date_format.dart';
+import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/rent_data.dart';
-import 'package:bicycle_rental_system/domain/time_unit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +12,9 @@ import 'package:image_picker/image_picker.dart';
 
 class FirebaseService {
   final db = FirebaseFirestore.instance;
-  final String currentDate = MyDateFormat().getCurrentDate();
+  final String currentDate = MyDateFormat().getCurrentDateIso();
   StateController stateController = Get.find();
+  AuthController authController = Get.find();
 
 // firestore fetch all data
   Future<List<DocumentSnapshot>?> fetchAllData() async {
@@ -37,11 +38,11 @@ class FirebaseService {
   }
 
 // fetch bicycle data
-  Future<Bicycle?> fetchBicycleData(int productId) {
-    return db.collection('items').doc('product$productId').get().then((value) {
+  Future<Bicycle?> fetchBicycleData(String productId) {
+    return db.collection('items').doc(productId).get().then((value) {
       if (value.exists) {
         return Bicycle(
-          productId: value.data()!['productId'],
+          productId: productId,
           productName: value.data()!['productName'],
           description: value.data()!['description'],
           imageUrl: value.data()!['imageUrl'],
@@ -53,22 +54,69 @@ class FirebaseService {
     });
   }
 
+// firestore fetch user data
+  Future<Map<String, dynamic>?> fetchUserData(
+    String uid,
+  ) async {
+    final docSnapshot = await db.collection('userData').doc(uid).get();
+    if (docSnapshot.exists) {
+      return docSnapshot.data();
+    } else {
+      return null;
+    }
+  }
+
+// firestore admin check
+  Future<bool> getIsAdmin(String uid) async {
+    DocumentSnapshot doc = await db.collection('userData').doc(uid).get();
+
+    if (doc.exists) {
+      return (doc.data() as Map<String, dynamic>)['isAdmin'] ?? false;
+    }
+    return false;
+  }
+
+// update user data
+  Future<bool> updateUserData(
+      String uid, String name, String address, String postalCode) async {
+    var result =
+        await FirebaseFirestore.instance.collection('userData').doc(uid).set({
+      'userName': name,
+      'userAddress': address,
+      'postalCode': postalCode,
+    }).then((void value) {
+      return true;
+    }).catchError((error) {
+      Get.snackbar(
+        "Error",
+        "Failed to upload rent data",
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    });
+    return result;
+  }
+
 // BicycleSerialId+1
-  Future<int> incrementBicycleId() async {
+  Future<String> incrementBicycleId() async {
     DocumentReference counterRef =
         db.collection('settings').doc('BicycleSerialID');
     return db.runTransaction((transaction) async {
       DocumentSnapshot counterSnapshot = await transaction.get(counterRef);
       if (!counterSnapshot.exists) {
-        transaction.set(counterRef, {'currentBicycleID': 1});
-        return 1;
+        transaction.set(counterRef, {'currentBicycleID': '000001'});
+        return '000001';
       } else {
         Map<String, dynamic>? data =
             counterSnapshot.data() as Map<String, dynamic>?;
         if (data != null) {
-          int updatedCounter = data['currentBicycleID'] + 1;
-          transaction.update(counterRef, {'currentBicycleID': updatedCounter});
-          return updatedCounter;
+          int updatedProductCounter = int.parse(data['currentBicycleID']) + 1;
+          String updatedProductString =
+              updatedProductCounter.toString().padLeft(6, "0");
+          transaction
+              .update(counterRef, {'currentBicycleID': updatedProductString});
+          return updatedProductString;
         } else {
           throw Exception("Invalid data");
         }
@@ -77,21 +125,24 @@ class FirebaseService {
   }
 
 // RentSerialId+1
-  Future<int> incrementRentId() async {
+  Future<String> incrementRentalID() async {
     DocumentReference counterRef =
         db.collection('settings').doc('RentalSerialID');
     return db.runTransaction((transaction) async {
       DocumentSnapshot counterSnapshot = await transaction.get(counterRef);
       if (!counterSnapshot.exists) {
-        transaction.set(counterRef, {'currentRentalID': 1});
-        return 1;
+        transaction.set(counterRef, {'currentRentalID': '000001'});
+        return '000001';
       } else {
         Map<String, dynamic>? data =
             counterSnapshot.data() as Map<String, dynamic>?;
         if (data != null) {
-          int updatedCounter = data['currentRentalID'] + 1;
-          transaction.update(counterRef, {'currentRentalID': updatedCounter});
-          return updatedCounter;
+          int updatedRentalCounter = int.parse(data['currentRentalID']) + 1;
+          String updatedRentalString =
+              updatedRentalCounter.toString().padLeft(6, "0");
+          transaction
+              .update(counterRef, {'currentRentalID': updatedRentalString});
+          return updatedRentalString;
         } else {
           throw Exception("Invalid data");
         }
@@ -103,15 +154,14 @@ class FirebaseService {
   Future<bool> registrationData(Bicycle bicycle) async {
     String imageUrl = await uploadImage(
         bicycle.productId,
-        stateController.memory.value!,
+        stateController.memory.value,
         bicycle.productId.toString() + bicycle.productName);
     bicycle.imageUrl = imageUrl;
 
     var result = await FirebaseFirestore.instance
         .collection('items')
-        .doc('product${bicycle.productId}')
+        .doc(bicycle.productId)
         .set({
-      'productId': bicycle.productId,
       'productName': bicycle.productName,
       'description': bicycle.description,
       'imageUrl': imageUrl,
@@ -132,12 +182,12 @@ class FirebaseService {
 
 // upload image to firebase storage
   Future<String> uploadImage(
-      int productId, Uint8List imageMemory, String fileName) async {
+      String productId, Uint8List imageMemory, String fileName) async {
     var metadata = SettableMetadata(
       contentType: "image/jpeg",
     );
     Reference reference =
-        FirebaseStorage.instance.ref('images/product$productId/$fileName');
+        FirebaseStorage.instance.ref('images/$productId/$fileName');
     UploadTask uploadTask = reference.putData(imageMemory, metadata);
 
     TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
@@ -172,17 +222,15 @@ class FirebaseService {
 
 // Upload Rent Data
   Future<bool> uploadRentalData(RentalData rentalData) async {
-    String timeUnitString = rentalData.timeUnit.timeUnitGetString;
     var result = await FirebaseFirestore.instance
         .collection('rentalData')
-        .doc('rent${rentalData.rentID}')
+        .doc(rentalData.rentalID)
         .set({
-      'rentalID': rentalData.rentID,
-      'bicycleID': rentalData.bicycle.productId,
-      'rentalStartDate': rentalData.rentStartDate,
-      'rentalPeriod': rentalData.rentPeriod,
-      'timeTag': timeUnitString,
-      'rentalUser': rentalData.rentUser,
+      'bicycleID': rentalData.bicycleID,
+      'rentalStartDate': rentalData.rentalStartDate,
+      'rentalEndDate': rentalData.rentalEndDate,
+      'rentalUser': rentalData.rentalUserID,
+      'rentalPrice': rentalData.rentalPrice,
     }).then((void value) {
       return true;
     }).catchError((error) {

@@ -1,3 +1,4 @@
+import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
@@ -12,19 +13,22 @@ class SignUpPage extends StatelessWidget {
     TextEditingController _emailController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
     AuthController authController = Get.find();
+    double mWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
         appBar: AppBar(
             title: Padding(
-                padding: const EdgeInsets.only(left: 100),
+                padding: mWidth < BREAKPOINT1
+                    ? const EdgeInsets.all(0)
+                    : const EdgeInsets.only(left: 60),
                 child: boldText('BICYCLE RENTAL', Colors.white, 32)),
             backgroundColor: MyTheme.blue,
             elevation: 0),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              boldText('Sign Up', Colors.black, 32),
+              SizedBox(height: 30),
+              boldText('Sign Up', Colors.grey, 32),
               SizedBox(height: 20),
               Container(
                 width: 300,
@@ -47,7 +51,7 @@ class SignUpPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 30),
               ElevatedButton(
                   onPressed: () {
                     authController.register(

@@ -23,6 +23,12 @@ class RegistrationPage extends StatelessWidget {
     Uint8List? memory;
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            stateController.memoryRefresh();
+            Navigator.of(context).pop();
+          },
+        ),
         title: Padding(
             padding: mWidth < BREAKPOINT1
                 ? const EdgeInsets.all(0)
@@ -154,7 +160,7 @@ class RegistrationPage extends StatelessWidget {
                         );
                         return;
                       }
-                      int productId = await firebase.incrementBicycleId();
+                      String productId = await firebase.incrementBicycleId();
                       Bicycle bicycle = Bicycle(
                           productId: productId,
                           productName: _nameController.text,
@@ -163,6 +169,7 @@ class RegistrationPage extends StatelessWidget {
                           pricePerHour: int.parse(_priceController.text));
                       bool success = await firebase.registrationData(bicycle);
                       if (success) {
+                        stateController.memoryRefresh();
                         Get.snackbar(
                           "Success",
                           "Successfully uploaded data",

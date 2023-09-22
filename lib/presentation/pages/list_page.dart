@@ -1,5 +1,6 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/config/date_format.dart';
+import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
@@ -29,11 +30,23 @@ class ListPage extends StatefulWidget {
 
 class _DetailPageState extends State<ListPage> {
   FirebaseService firebase = FirebaseService();
+  StateController stateController = Get.find();
+  AuthController authController = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    authController.isAdmin.value =
+        await firebase.getIsAdmin(authController.getUid());
+  }
 
   @override
   Widget build(BuildContext context) {
     var f = NumberFormat("#,###");
-    StateController stateController = Get.find();
     MyDateFormat dateFormat = MyDateFormat();
 
     double mWidth = MediaQuery.of(context).size.width;
@@ -77,63 +90,71 @@ class _DetailPageState extends State<ListPage> {
     }
 
     return Scaffold(
-        drawer: Drawer(
-          backgroundColor: MyTheme.lightBlue,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 100.0, left: 48),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.directions_bike),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RegistrationPage()),
-                          );
-                        },
-                        child: Text('Registration',
-                            style: TextStyle(fontSize: 24))),
-                  ],
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.directions_bike),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RentalListPage()),
-                          );
-                        },
-                        child: Text('Rental List',
-                            style: TextStyle(fontSize: 24))),
-                  ],
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.directions_bike),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AccountPage()),
-                          );
-                        },
-                        child: Text('Account', style: TextStyle(fontSize: 24))),
-                  ],
-                ),
-              ],
+        drawer: Obx(
+          () => Drawer(
+            backgroundColor: MyTheme.lightBlue,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 100.0, left: 48),
+              child: Column(
+                children: [
+                  authController.isAdmin.value
+                      ? Row(
+                          children: [
+                            Icon(Icons.directions_bike),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            RegistrationPage()),
+                                  );
+                                },
+                                child: Text('Registration',
+                                    style: TextStyle(fontSize: 24))),
+                          ],
+                        )
+                      : SizedBox(),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  authController.isAdmin.value
+                      ? Row(
+                          children: [
+                            Icon(Icons.directions_bike),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RentalListPage()),
+                                  );
+                                },
+                                child: Text('Rental List',
+                                    style: TextStyle(fontSize: 24))),
+                          ],
+                        )
+                      : SizedBox(),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.directions_bike),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountPage()),
+                            );
+                          },
+                          child:
+                              Text('Account', style: TextStyle(fontSize: 24))),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -211,7 +232,7 @@ class _DetailPageState extends State<ListPage> {
                                     children:
                                         List.generate(docs.length, (index) {
                                       Bicycle bicycle = Bicycle(
-                                          productId: docs[index]['productId'],
+                                          productId: docs[index].id,
                                           productName: docs[index]
                                               ['productName'],
                                           description: docs[index]
@@ -341,6 +362,8 @@ class _DetailPageState extends State<ListPage> {
                                         ElevatedButton(
                                             onPressed: () {
                                               //
+                                              if (stateController.cart.isEmpty)
+                                                return;
                                               showDialog(
                                                   context: context,
                                                   builder:

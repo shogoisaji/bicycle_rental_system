@@ -65,16 +65,25 @@ class CheckoutDialog extends StatelessWidget {
               if (stateController.cart.isEmpty) return;
               FirebaseService firebase = FirebaseService();
               bool uploadResult = false;
+              String rentalEndDate = MyDateFormat()
+                  .getEndDateTime(
+                      stateController.rentStartDate.value,
+                      stateController.rentPeriod.value,
+                      stateController.timeUnitState.value)
+                  .toIso8601String();
               for (Bicycle b in stateController.cart) {
-                int rentID = await firebase.incrementRentId();
+                String rentalID = await firebase.incrementRentalID();
+                int rentalPrice = b.pricePerHour *
+                    stateController.priceRate *
+                    stateController.rentPeriod.value;
                 RentalData rentData = RentalData(
-                  rentID: rentID,
-                  bicycle: b,
-                  timeUnit: stateController.timeUnitState.value,
-                  rentUser: stateController.userName.value,
-                  rentStartDate:
+                  rentalID: rentalID,
+                  bicycleID: b.productId,
+                  rentalUserID: stateController.userName.value,
+                  rentalStartDate:
                       stateController.rentStartDate.value.toIso8601String(),
-                  rentPeriod: stateController.rentPeriod.value,
+                  rentalEndDate: rentalEndDate,
+                  rentalPrice: rentalPrice,
                 );
                 uploadResult = await firebase.uploadRentalData(rentData);
               }
@@ -90,7 +99,7 @@ class CheckoutDialog extends StatelessWidget {
                 Navigator.pop(context);
                 Get.to(() => ListPage());
               } else {
-                print('errro');
+                print('erro');
                 Get.snackbar(
                   "Error",
                   "Failed to upload data",

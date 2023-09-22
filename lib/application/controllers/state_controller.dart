@@ -57,14 +57,10 @@ class StateController extends GetxController {
   Rx<Uint8List> memory = Uint8List(0).obs;
   RxBool isImageSelected = false.obs;
 
-  // void setMemory(Uint8List memory) {
-  //   _memory = memory;
-  //   update();
-  // }
-
-  // Uint8List? get memory {
-  //   return _memory;
-  // }
+  void memoryRefresh() {
+    memory.value = Uint8List(0);
+    isImageSelected.value = false;
+  }
 
 // cart
   List<dynamic> cart = [].obs;

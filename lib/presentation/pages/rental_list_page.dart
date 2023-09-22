@@ -6,6 +6,7 @@ import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class RentalListPage extends StatelessWidget {
   const RentalListPage({super.key});
@@ -15,6 +16,7 @@ class RentalListPage extends StatelessWidget {
     double mWidth = MediaQuery.of(context).size.width;
     FirebaseService firebase = FirebaseService();
     MyDateFormat dateFormat = MyDateFormat();
+    var f = NumberFormat("#,###");
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
@@ -126,19 +128,15 @@ class RentalListPage extends StatelessWidget {
                                                             Colors.black, 20),
                                                         mediumText(
                                                             dateFormat
-                                                                .getFormatEndDate(
-                                                              DateTime.parse(docs[
-                                                                      index][
-                                                                  'rentalStartDate']),
-                                                              docs[index][
-                                                                  'rentalPeriod'],
-                                                            ),
+                                                                .formatForDisplay(
+                                                                    docs[index][
+                                                                        'rentalEndDate']),
                                                             Colors.black,
                                                             14),
                                                       ],
                                                     ),
                                                     SizedBox(
-                                                      width: 80,
+                                                      width: 120,
                                                       child: Expanded(
                                                         child: Container(
                                                           alignment: Alignment
@@ -152,7 +150,7 @@ class RentalListPage extends StatelessWidget {
                                                                     bottom: 4,
                                                                     right: 16),
                                                             child: boldText(
-                                                                'Price',
+                                                                '￥${f.format(docs[index]['rentalPrice'])}',
                                                                 Colors.black,
                                                                 24),
                                                           ),

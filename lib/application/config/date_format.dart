@@ -10,17 +10,18 @@ class MyDateFormat {
 
   final now = DateTime.now();
 
-  String getCurrentDate() {
+  String getCurrentDateIso() {
     // 2023-08-20T06:00:00.000Z
     return now.toIso8601String();
   }
 
-  DateTime getEndDate(DateTime startDate, int rentalPeriod) {
+  DateTime getEndDateTime(
+      DateTime startDate, int rentalPeriod, TimeUnit timeUnitState) {
     DateTime endDate;
-    if (stateController.timeUnitState == TimeUnit.month) {
+    if (timeUnitState == TimeUnit.month) {
       endDate =
           startDate.add(Duration(days: stateController.rentPeriod.value * 30));
-    } else if (stateController.timeUnitState == TimeUnit.day) {
+    } else if (timeUnitState == TimeUnit.day) {
       endDate = startDate.add(Duration(days: stateController.rentPeriod.value));
     } else {
       endDate =

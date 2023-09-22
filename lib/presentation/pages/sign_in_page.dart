@@ -1,3 +1,4 @@
+import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/presentation/pages/sign_up_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
@@ -23,11 +24,14 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    double mWidth = MediaQuery.of(context).size.width;
     AuthController authController = Get.find();
     return Scaffold(
         appBar: AppBar(
             title: Padding(
-                padding: const EdgeInsets.only(left: 100),
+                padding: mWidth < BREAKPOINT1
+                    ? const EdgeInsets.all(0)
+                    : const EdgeInsets.only(left: 60),
                 child: boldText('BICYCLE RENTAL', Colors.white, 32)),
             backgroundColor: MyTheme.blue,
             elevation: 0),
@@ -118,9 +122,17 @@ class _SignInPageState extends State<SignInPage> {
                 SizedBox(height: 100),
                 ElevatedButton(
                     onPressed: () {
-                      authController.login('a@gmail.com', 'passpass');
+                      authController.login('kato@gmail.com', 'passpass');
                     },
-                    child: Text('Test Sign In')),
+                    child: Text('Test general user')),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      authController.login('test@gmail.com', 'passpass');
+                    },
+                    child: Text('Test Admin')),
               ],
             ),
           ),
