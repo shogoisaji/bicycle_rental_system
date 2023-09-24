@@ -92,9 +92,10 @@ class _DetailPageState extends State<ListPage> {
     return Scaffold(
         drawer: Obx(
           () => Drawer(
+            width: 250,
             backgroundColor: MyTheme.lightBlue,
             child: Padding(
-              padding: const EdgeInsets.only(top: 100.0, left: 48),
+              padding: const EdgeInsets.only(top: 100.0, left: 32),
               child: Column(
                 children: [
                   authController.isAdmin.value
@@ -216,7 +217,7 @@ class _DetailPageState extends State<ListPage> {
                     ? const EdgeInsets.all(0)
                     : const EdgeInsets.only(left: 60),
                 child: boldText('BICYCLE RENTAL', Colors.white,
-                    mWidth < BREAKPOINT1 ? 28 : 32)),
+                    mWidth < BREAKPOINT1 ? 20 : 32)),
             backgroundColor: MyTheme.blue,
             elevation: 0),
         body: Row(
@@ -234,7 +235,7 @@ class _DetailPageState extends State<ListPage> {
                             if (snapshot.hasData) {
                               List<DocumentSnapshot> docs = snapshot.data!;
                               return SingleChildScrollView(
-                                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                                padding: EdgeInsets.all(16),
                                 child: StaggeredGrid.count(
                                     crossAxisCount: columnCount,
                                     mainAxisSpacing: 16,
@@ -249,7 +250,7 @@ class _DetailPageState extends State<ListPage> {
                                               ['description'],
                                           pricePerHour: docs[index]
                                               ['pricePerHour'],
-                                          imageUrl: docs[index]['imageUrl']);
+                                          imageUrls: docs[index]['imageUrl']);
                                       if (index == 1 && columnCount != 2) {
                                         return StaggeredGridTile.count(
                                             crossAxisCellCount: 2,
@@ -327,50 +328,88 @@ class _DetailPageState extends State<ListPage> {
                             ),
 // right under checkout
                             Container(
-                                color: MyTheme.blue,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: mWidth < 800 ? 10 : 20),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        cartPeriodCount(),
-                                        InkWell(
-                                          onTap: () {
-                                            _selectDateTime(context);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
+                              padding: EdgeInsets.only(top: 8),
+                              child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: mWidth < 800 ? 10 : 20),
+                                  decoration: BoxDecoration(
+                                    color: MyTheme.blue,
+                                    border: Border(
+                                        top: BorderSide(
+                                            width: 1,
+                                            color:
+                                                Colors.white.withOpacity(0.7))),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 3,
+                                        offset: Offset(0,
+                                            -3), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          cartPeriodCount(),
+                                          InkWell(
+                                            onTap: () {
+                                              _selectDateTime(context);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(3,
+                                                        3), // changes position of shadow
+                                                  ),
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(-3,
+                                                        -3), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 6, horizontal: 8),
+                                              child: Obx(
+                                                () => mediumText(
+                                                    dateFormat
+                                                        .formatForDateTime(
+                                                            stateController
+                                                                .rentStartDate
+                                                                .value),
+                                                    Colors.black,
+                                                    16),
+                                              ),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 6, horizontal: 8),
-                                            child: Obx(
-                                              () => mediumText(
-                                                  dateFormat.formatForDateTime(
-                                                      stateController
-                                                          .rentStartDate.value),
-                                                  Colors.black,
-                                                  16),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 16,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        ElevatedButton(
-                                            onPressed: () {
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
                                               //
                                               if (stateController.cart.isEmpty)
                                                 return;
@@ -380,78 +419,90 @@ class _DetailPageState extends State<ListPage> {
                                                       (BuildContext context) =>
                                                           CheckoutDialog());
                                             },
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(MyTheme.orange),
-                                              shape: MaterialStateProperty.all<
-                                                      RoundedRectangleBorder>(
-                                                  RoundedRectangleBorder(
+                                            child: Container(
+                                              constraints:
+                                                  BoxConstraints(minWidth: 70),
+                                              decoration: BoxDecoration(
+                                                color: MyTheme.orange,
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                              )),
-                                            ),
-                                            child: mWidth > 900
-                                                ? Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 4),
-                                                    child: boldText('checkout',
-                                                        Colors.white, 20),
-                                                  )
-                                                : Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                vertical: 4,
-                                                                horizontal: 0),
-                                                        child: Text(
-                                                            'check\nout',
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600)),
-                                                      ),
-                                                    ],
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(3,
+                                                        3), // changes position of shadow
+                                                  ),
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(-3,
+                                                        -3), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 16),
+                                              child: Text('checkout',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20,
                                                   )),
-                                        (Obx(
-                                          () => Container(
-                                            constraints:
-                                                BoxConstraints(minWidth: 70),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            padding: EdgeInsets.fromLTRB(
-                                                4, 4, 10, 4),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                mediumText(
-                                                    '￥', Colors.black, 22),
-                                                mediumText(
-                                                    '${f.format(stateController.totalPrice.value)}',
-                                                    Colors.black,
-                                                    22),
-                                              ],
                                             ),
                                           ),
-                                        ))
-                                      ],
-                                    ),
-                                  ],
-                                ))
+                                          (Obx(
+                                            () => Container(
+                                              constraints:
+                                                  BoxConstraints(minWidth: 70),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(3,
+                                                        3), // changes position of shadow
+                                                  ),
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(-3,
+                                                        -3), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  4, 4, 10, 4),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  mediumText(
+                                                      '￥', Colors.black, 22),
+                                                  mediumText(
+                                                      '${f.format(stateController.totalPrice.value)}',
+                                                      Colors.black,
+                                                      22),
+                                                ],
+                                              ),
+                                            ),
+                                          ))
+                                        ],
+                                      ),
+                                    ],
+                                  )),
+                            )
                           ],
                         ),
                       ],

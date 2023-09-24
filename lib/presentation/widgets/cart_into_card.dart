@@ -67,7 +67,7 @@ class _CartIntoCardState extends State<CartIntoCard> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
                                 child: Image.network(
-                                  widget.bicycle.imageUrl,
+                                  widget.bicycle.imageUrls[0],
                                   fit: BoxFit.fitHeight,
                                 ),
                               ),

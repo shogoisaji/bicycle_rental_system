@@ -1,3 +1,4 @@
+import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/sign_in_page.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 class AuthController extends GetxController {
   //put is main()
   static AuthController instance = Get.find();
+  StateController stateController = Get.find();
 
   late Rx<User?> _user;
   Rx<bool> isAdmin = false.obs;
@@ -81,6 +83,7 @@ class AuthController extends GetxController {
   }
 
   void logout() async {
+    stateController.clearCart();
     await auth.signOut();
   }
 }

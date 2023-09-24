@@ -22,7 +22,7 @@ class CheckoutDialog extends StatelessWidget {
       title: boldText('Check Rental Info', Colors.black, 24),
       content: Container(
         padding: EdgeInsets.only(left: 16),
-        height: 300,
+        height: 280,
         width: 100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +81,7 @@ class CheckoutDialog extends StatelessWidget {
                 RentalData rentData = RentalData(
                   rentalID: rentalID,
                   bicycleID: b.productId,
-                  rentalUserID: authController.loginUserName.value,
+                  rentalUserID: authController.getUid(),
                   rentalStartDate:
                       stateController.rentStartDate.value.toIso8601String(),
                   rentalEndDate: rentalEndDate,
@@ -90,7 +90,6 @@ class CheckoutDialog extends StatelessWidget {
                 uploadResult = await firebase.uploadRentalData(rentData);
               }
               if (uploadResult) {
-                stateController.clearCart();
                 Get.snackbar(
                   "Success",
                   "Rental information has been registered",
@@ -99,9 +98,10 @@ class CheckoutDialog extends StatelessWidget {
                   maxWidth: 500,
                 );
                 Navigator.pop(context);
-                Get.to(() => ListPage());
+                Get.offAll(() => ListPage());
+                stateController.clearCart();
               } else {
-                print('erro');
+                print('error');
                 Get.snackbar(
                   "Error",
                   "Failed to upload data",

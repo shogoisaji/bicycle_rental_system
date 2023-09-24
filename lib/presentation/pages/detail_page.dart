@@ -1,8 +1,11 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/config/date_format.dart';
+import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
+import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/cart_page.dart';
+import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/cart_into_card.dart';
@@ -20,11 +23,21 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  AuthController authController = Get.find();
+  String selectedImageUrl = '';
+
+  @override
+  void initState() {
+    selectedImageUrl = widget.bicycle.imageUrls[0];
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double mWidth = MediaQuery.of(context).size.width;
     double cardWidth = 0;
     double rate = 0;
+    AuthController authController = Get.find<AuthController>();
     StateController stateController = Get.find<StateController>();
 
     if (mWidth > BREAKPOINT1) {
@@ -102,12 +115,14 @@ class _DetailPageState extends State<DetailPage> {
                             Container(
                               width: 700 * rate,
                               height: 700 * rate,
-                              margin: EdgeInsets.only(left: 20),
+                              margin: EdgeInsets.only(left: 20, right: 20),
                               padding: EdgeInsets.all(20),
-                              child: Image.network(
-                                widget.bicycle.imageUrl,
-                                fit: BoxFit.fitWidth,
-                              ),
+                              child: selectedImageUrl == ''
+                                  ? Container()
+                                  : Image.network(
+                                      selectedImageUrl,
+                                      fit: BoxFit.fitWidth,
+                                    ),
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(15),
@@ -128,96 +143,181 @@ class _DetailPageState extends State<DetailPage> {
                               child: ListView.builder(
                                 padding: EdgeInsets.zero,
                                 scrollDirection: Axis.horizontal,
-                                // shrinkWrap: true,
-                                itemCount: 3,
+                                itemCount: widget.bicycle.imageUrls.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    margin: EdgeInsets.all(8),
-                                    padding: EdgeInsets.all(2),
-                                    width: 70,
-                                    height: 70,
-                                    child: Image.network(
-                                      widget.bicycle.imageUrl,
-                                      fit: BoxFit.fitWidth,
+                                  return InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedImageUrl =
+                                            widget.bicycle.imageUrls[index];
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.all(8),
+                                      padding: EdgeInsets.all(2),
+                                      width: 70,
+                                      height: 70,
+                                      child: Image.network(
+                                        widget.bicycle.imageUrls[index],
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.6),
+                                              spreadRadius: 1.5,
+                                              blurRadius: 4,
+                                              offset: Offset(0, 1),
+                                            ),
+                                          ]),
                                     ),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(15),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.6),
-                                            spreadRadius: 1.5,
-                                            blurRadius: 4,
-                                            offset: Offset(0,
-                                                1), // changes position of shadow
-                                          ),
-                                        ]),
                                   );
                                 },
                               ),
                             ),
-// under card
-                            Stack(
-                              children: [
-                                Container(
-                                    constraints: BoxConstraints(
-                                        minHeight: 200, maxWidth: 800),
-                                    padding: EdgeInsets.all(15),
-                                    margin: EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 10),
-                                    decoration: BoxDecoration(
-                                      color: MyTheme.grey,
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  boldText(
-                                                      widget
-                                                          .bicycle.productName,
-                                                      Colors.black,
-                                                      mWidth < BREAKPOINT1
-                                                          ? 24
-                                                          : 32),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 130.0),
-                                                    child: regularText(
-                                                        widget.bicycle
-                                                            .description,
-                                                        Colors.black87,
-                                                        20),
-                                                  ),
-                                                ],
-                                              ),
+// add image button
+                            authController.isAdmin.value
+                                ? Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: ElevatedButton(
+                                        onPressed: () async {
+                                          //                          }
+                                        },
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  MyTheme.orange),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                        Positioned(
-                                            top: 0,
-                                            right: 20,
-                                            child: Obx(() => boldText(
-                                                '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${stateController.unit}',
+                                        child: boldText(
+                                            'add image', Colors.white, 18)),
+                                  )
+                                : Container(),
+// under card
+                            Obx(() => Container(
+                                constraints: BoxConstraints(
+                                    minHeight: 200, maxWidth: 800),
+                                padding: EdgeInsets.all(15),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: MyTheme.grey,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          child: Expanded(
+                                            child: boldText(
+                                                widget.bicycle.productName,
                                                 Colors.black,
-                                                mWidth < BREAKPOINT1
-                                                    ? 24
-                                                    : 32))),
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: ElevatedButton(
+                                                mWidth < BREAKPOINT1 ? 24 : 32),
+                                          ),
+                                        ),
+                                        boldText(
+                                            '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${stateController.unit}',
+                                            Colors.black,
+                                            mWidth < BREAKPOINT1 ? 24 : 32),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    regularText(widget.bicycle.description,
+                                        Colors.black87, 20),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          authController.isAdmin.value
+                                              ? ElevatedButton(
+                                                  onPressed: () async {
+                                                    //select
+                                                    var result =
+                                                        await FirebaseService()
+                                                            .deleteData(widget
+                                                                .bicycle
+                                                                .productId);
+                                                    if (result) {
+                                                      Get.snackbar(
+                                                        'Delete',
+                                                        'Delete success',
+                                                        backgroundColor:
+                                                            Colors.blue,
+                                                        snackPosition:
+                                                            SnackPosition
+                                                                .BOTTOM,
+                                                        maxWidth: 500,
+                                                      );
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    ListPage()),
+                                                      );
+                                                    } else {
+                                                      Get.snackbar(
+                                                        'Error',
+                                                        'Delete failed',
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                        snackPosition:
+                                                            SnackPosition
+                                                                .BOTTOM,
+                                                        maxWidth: 500,
+                                                      );
+                                                    }
+                                                  },
+                                                  style: ButtonStyle(
+                                                    padding: MaterialStateProperty
+                                                        .all<EdgeInsets>(
+                                                            EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        10)),
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(
+                                                                Colors.red),
+                                                    shape: MaterialStateProperty
+                                                        .all<
+                                                            RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: boldText('DELETE',
+                                                      Colors.white, 24))
+                                              : Container(),
+                                          ElevatedButton(
                                               onPressed: () {
                                                 //select
                                                 stateController
@@ -244,11 +344,11 @@ class _DetailPageState extends State<DetailPage> {
                                               ),
                                               child: boldText(
                                                   'SELECT', Colors.white, 24)),
-                                        )
-                                      ],
-                                    )),
-                              ],
-                            ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ))),
                           ],
                         )),
                   ),

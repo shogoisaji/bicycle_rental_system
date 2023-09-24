@@ -2,6 +2,7 @@ import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/account_page.dart';
+import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/account_text_edit%20copy.dart';
@@ -97,9 +98,10 @@ class _AccountEditPageState extends State<AccountEditPage> {
                         _postalCodeController.text,
                         _addressController.text);
                     if (result) {
+                      authController.loginUserName.value = _nameController.text;
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => AccountPage(),
+                          builder: (context) => ListPage(),
                         ),
                       );
                     }

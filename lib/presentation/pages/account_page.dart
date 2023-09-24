@@ -16,6 +16,10 @@ class AccountPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<AccountPage> {
+  String name = '';
+  String postalCode = '';
+  String address = '';
+  String email = '';
   @override
   Widget build(BuildContext context) {
     AuthController authController = Get.find();
@@ -55,6 +59,10 @@ class _DetailPageState extends State<AccountPage> {
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (snapshot.hasData) {
+                              name = snapshot.data['userName'] ?? '';
+                              postalCode = snapshot.data['postalCode'] ?? '';
+                              address = snapshot.data['userAddress'] ?? '';
+                              email = snapshot.data['userEmail'];
                               return Container(
                                   constraints: BoxConstraints(
                                       maxWidth: 500, minWidth: 300),
@@ -69,12 +77,10 @@ class _DetailPageState extends State<AccountPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      accountTextBox('Name',
-                                          snapshot.data['userName'] ?? ''),
-                                      accountTextBox('Email',
-                                          snapshot.data['userEmail'] ?? ''),
+                                      accountTextBox('Name', name),
+                                      accountTextBox('Email', email),
                                       accountTextBox('Address',
-                                          '〒${snapshot.data['postalCode'] ?? ''} ${snapshot.data['userAddress'] ?? ''}'),
+                                          '〒${postalCode}\n${address}'),
                                     ],
                                   ));
                             } else {
@@ -93,9 +99,9 @@ class _DetailPageState extends State<AccountPage> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => AccountEditPage(
-                                    name: 'name',
-                                    postalCode: 'postalCode',
-                                    address: 'address',
+                                    name: name,
+                                    postalCode: postalCode,
+                                    address: address,
                                   ),
                                 ),
                               );

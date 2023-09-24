@@ -1,9 +1,12 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/config/date_format.dart';
+import 'package:bicycle_rental_system/application/utils/rental_data_util.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
+import 'package:bicycle_rental_system/domain/rent_data.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
+import 'package:bicycle_rental_system/presentation/widgets/rental_List_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -47,131 +50,43 @@ class RentalListPage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 DocumentSnapshot<Object?> rentalDataMap =
                                     docs[index];
+                                RentalData rentalData =
+                                    RentalDataUtil.rentalDataFromMap(
+                                        rentalDataMap);
 //fetch bicycle data
-                                return FutureBuilder(
-                                    future: firebase
-                                        .fetchBicycleData(
-                                            rentalDataMap['bicycleID'])
-                                        .timeout(Duration(seconds: 5)),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        Bicycle bicycleData = snapshot.data!;
-                                        return Container(
-                                          height: 110,
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 8, horizontal: 24),
-                                          padding: EdgeInsets.all(8),
-                                          constraints:
-                                              BoxConstraints(maxWidth: 600),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[400],
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 90,
-                                                height: 90,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                margin:
-                                                    EdgeInsets.only(right: 16),
-                                                padding: EdgeInsets.all(2),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  child: Image.network(
-                                                    bicycleData.imageUrl,
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        mediumText('Bicycle',
-                                                            Colors.black, 14),
-                                                        mediumText(
-                                                            '・${bicycleData.productName}',
-                                                            Colors.black,
-                                                            16),
-                                                        mediumText('User',
-                                                            Colors.black, 14),
-                                                        mediumText(
-                                                            '・${rentalDataMap['rentalUser']}',
-                                                            Colors.black,
-                                                            16),
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      children: [
-                                                        mediumText(
-                                                            dateFormat
-                                                                .formatForDisplay(
-                                                                    docs[index][
-                                                                        'rentalStartDate']),
-                                                            Colors.black,
-                                                            14),
-                                                        boldText('   ↓',
-                                                            Colors.black, 20),
-                                                        mediumText(
-                                                            dateFormat
-                                                                .formatForDisplay(
-                                                                    docs[index][
-                                                                        'rentalEndDate']),
-                                                            Colors.black,
-                                                            14),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      width: 120,
-                                                      child: Expanded(
-                                                        child: Container(
-                                                          alignment: Alignment
-                                                              .bottomRight,
-                                                          height:
-                                                              double.infinity,
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    bottom: 4,
-                                                                    right: 16),
-                                                            child: boldText(
-                                                                '￥${f.format(docs[index]['rentalPrice'])}',
-                                                                Colors.black,
-                                                                24),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      } else if (snapshot.hasError) {
-                                        return Center(
-                                            child: Text(
-                                                'Error: ${snapshot.error}'));
-                                      } else {
-                                        return Center(
-                                            child: CircularProgressIndicator());
-                                      }
-                                    });
+                                return Padding(
+                                  padding: index == 0
+                                      ? const EdgeInsets.only(top: 8.0)
+                                      : const EdgeInsets.all(0),
+                                  child: FutureBuilder(
+                                      future: firebase
+                                          .fetchBicycleData(
+                                              rentalData.bicycleID)
+                                          .timeout(Duration(seconds: 5)),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        } else if (snapshot.hasError) {
+                                          return Center(
+                                              child: Text(
+                                                  'Error: ${snapshot.error}'));
+                                        } else if (snapshot.hasData) {
+                                          Bicycle bicycleData = snapshot.data!;
+                                          return RentalListCard(
+                                            rentalData: rentalData,
+                                            bicycleData: bicycleData,
+                                          );
+                                        } else {
+                                          return RentalListCard(
+                                            rentalData: rentalData,
+                                            bicycleData: null,
+                                          );
+                                        }
+                                      }),
+                                );
                               });
                         } else if (snapshot.hasError) {
                           return Center(

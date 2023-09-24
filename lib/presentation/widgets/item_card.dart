@@ -47,83 +47,91 @@ class _ItemCardState extends State<ItemCard> {
     return FadeAnimation(
         delay: 0.7,
         child: Container(
+            padding: EdgeInsets.all(15 * rate),
             decoration: BoxDecoration(
               color: MyTheme.grey,
               borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  spreadRadius: 0.5,
+                  blurRadius: 3,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: EdgeInsets.all(15 * rate),
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.white,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DetailPage(bicycle: widget.bicycle),
-                          ),
-                        );
-                      },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image.network(
-                          widget.bicycle.imageUrl,
-                          fit: BoxFit.fitWidth,
+            child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.white,
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetailPage(bicycle: widget.bicycle),
                         ),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(
+                        widget.bicycle.imageUrls[0],
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          mediumText(widget.bicycle.productName, Colors.black,
-                              24 * rate),
-                          Obx(() => boldText(
-                              '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${stateController.unit}',
-                              Colors.black,
-                              24 * rate)),
-                        ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            mediumText(widget.bicycle.productName, Colors.black,
+                                24 * rate),
+                            Obx(() => boldText(
+                                '￥${f.format(widget.bicycle.pricePerHour * stateController.priceRate)}/${stateController.unit}',
+                                Colors.black,
+                                24 * rate)),
+                          ],
+                        ),
                       ),
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          //
-                          stateController.addCart(widget.bicycle);
-                        },
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                              EdgeInsets.symmetric(
-                                  horizontal: 20 * rate, vertical: 15 * rate)),
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(MyTheme.purple),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        //
+                        stateController.addCart(widget.bicycle);
+                      },
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.symmetric(
+                                horizontal: 20 * rate, vertical: 15 * rate)),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(MyTheme.purple),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: boldText('SELECT', Colors.white, 24 * rate))
-                  ],
-                )
-              ]),
-            )));
+                      ),
+                      child: boldText('SELECT', Colors.white, 24 * rate))
+                ],
+              )
+            ])));
   }
 }

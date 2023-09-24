@@ -45,7 +45,7 @@ class FirebaseService {
           productId: productId,
           productName: value.data()!['productName'],
           description: value.data()!['description'],
-          imageUrl: value.data()!['imageUrl'],
+          imageUrls: value.data()!['imageUrl'],
           pricePerHour: value.data()!['pricePerHour'],
         );
       } else {
@@ -79,8 +79,10 @@ class FirebaseService {
 // update user data
   Future<bool> updateUserData(
       String uid, String name, String address, String postalCode) async {
-    var result =
-        await FirebaseFirestore.instance.collection('userData').doc(uid).set({
+    var result = await FirebaseFirestore.instance
+        .collection('userData')
+        .doc(uid)
+        .update({
       'userName': name,
       'userAddress': address,
       'postalCode': postalCode,
@@ -156,7 +158,7 @@ class FirebaseService {
         bicycle.productId,
         stateController.memory.value,
         bicycle.productId.toString() + bicycle.productName);
-    bicycle.imageUrl = imageUrl;
+    bicycle.imageUrls = [imageUrl];
 
     var result = await FirebaseFirestore.instance
         .collection('items')
@@ -196,13 +198,17 @@ class FirebaseService {
     return downloadUrl;
   }
 
+  // Future<bool> afterAddImage() async {
+  //   // dfafjadfa
+  // }
+
 // Delete FireStore Data
-  Future<String> deleteData(String doc) async {
+  Future<bool> deleteData(String doc) async {
     try {
       await FirebaseFirestore.instance.collection('items').doc(doc).delete();
-      return "'$doc'を削除しました";
+      return true;
     } catch (error) {
-      return "Error";
+      return false;
     }
   }
 
@@ -229,7 +235,7 @@ class FirebaseService {
       'bicycleID': rentalData.bicycleID,
       'rentalStartDate': rentalData.rentalStartDate,
       'rentalEndDate': rentalData.rentalEndDate,
-      'rentalUser': rentalData.rentalUserID,
+      'rentalUserID': rentalData.rentalUserID,
       'rentalPrice': rentalData.rentalPrice,
     }).then((void value) {
       return true;

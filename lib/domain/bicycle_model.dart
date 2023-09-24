@@ -2,14 +2,14 @@ class Bicycle {
   final String productId;
   final String productName;
   final String description;
-  String imageUrl;
+  List<dynamic> imageUrls;
   final int pricePerHour;
 
   Bicycle({
     required this.productId,
     required this.productName,
     required this.description,
-    required this.imageUrl,
+    required this.imageUrls,
     required this.pricePerHour,
   });
 }

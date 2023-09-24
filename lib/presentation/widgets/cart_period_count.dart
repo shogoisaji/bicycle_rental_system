@@ -7,7 +7,25 @@ Widget cartPeriodCount() {
 
   return Container(
     width: 100,
-    height: 30,
+    height: 35,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.5),
+          spreadRadius: 2,
+          blurRadius: 3,
+          offset: Offset(3, 3), // changes position of shadow
+        ),
+        BoxShadow(
+          color: Colors.white.withOpacity(0.5),
+          spreadRadius: 2,
+          blurRadius: 3,
+          offset: Offset(-3, -3), // changes position of shadow
+        ),
+      ],
+    ),
     child: Stack(
       children: [
         Row(
@@ -19,8 +37,8 @@ Widget cartPeriodCount() {
                 },
                 child: Container(
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(left: 3),
-                    height: 30,
+                    padding: EdgeInsets.only(left: 2),
+                    height: 35,
                     decoration: BoxDecoration(
                       color: Colors.red[300],
                       borderRadius: BorderRadius.circular(8),
@@ -39,7 +57,7 @@ Widget cartPeriodCount() {
                 child: Container(
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.only(right: 3),
-                    height: 30,
+                    height: 35,
                     decoration: BoxDecoration(
                       color: Colors.blue[300],
                       borderRadius: BorderRadius.circular(8),
@@ -53,16 +71,16 @@ Widget cartPeriodCount() {
           alignment: Alignment.center,
           child: Container(
             width: 50,
-            height: 30,
+            height: 35,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
-                  spreadRadius: 0.5,
+                  color: Colors.grey.withOpacity(0.4),
+                  spreadRadius: 1,
                   blurRadius: 3,
-                  offset: Offset(0, 0),
+                  offset: Offset(0, 1),
                 ),
               ],
             ),

@@ -20,7 +20,13 @@ Widget accountTextBox(String item, String value) {
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: mediumText(value, Colors.black, 20),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+            ),
+          ),
         ),
       )
     ],

@@ -16,6 +16,7 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     StateController stateController = Get.find<StateController>();
     double mWidth = MediaQuery.of(context).size.width;
+    bool isBreak1 = mWidth < BREAKPOINT1;
     MyDateFormat dateFormat = MyDateFormat();
 
     Future<void> _selectDateTime(BuildContext context) async {
@@ -50,7 +51,7 @@ class CartPage extends StatelessWidget {
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
           title: Padding(
-              padding: mWidth < BREAKPOINT1
+              padding: isBreak1
                   ? const EdgeInsets.all(0)
                   : const EdgeInsets.only(left: 60),
               child: boldText(
@@ -67,75 +68,79 @@ class CartPage extends StatelessWidget {
                   child: ListView.builder(
                       itemCount: stateController.cart.length,
                       itemBuilder: (context, index) {
-                        return Obx(() => Container(
-                              height: 150,
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 24),
-                              padding: EdgeInsets.all(8),
-                              constraints: BoxConstraints(maxWidth: 600),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[400],
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      width: 134,
-                                      height: 134,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      margin: EdgeInsets.only(right: 20),
-                                      padding: EdgeInsets.all(2),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
-                                        child: Image.network(
-                                          stateController.cart[index].imageUrl,
-                                          fit: BoxFit.fitWidth,
-                                        ),
+                        return Obx(() => stateController.cart.isNotEmpty
+                            ? Container(
+                                height: 120,
+                                margin: EdgeInsets.fromLTRB(
+                                    8, index == 0 ? 36 : 16, 8, 0),
+                                padding: EdgeInsets.all(8),
+                                constraints: BoxConstraints(maxWidth: 600),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[400],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(children: [
+                                  Container(
+                                    width: 100,
+                                    height: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    margin: EdgeInsets.only(right: 20),
+                                    padding: EdgeInsets.all(2),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: Image.network(
+                                        stateController
+                                            .cart[index].imageUrls[0],
+                                        fit: BoxFit.fitWidth,
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Container(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            boldText(
-                                                stateController
-                                                    .cart[index].productName,
-                                                Colors.black,
-                                                32),
-                                            mediumText(
-                                                '￥${f.format(stateController.cart[index].pricePerHour * stateController.priceRate)}/${stateController.unit}',
-                                                Colors.black,
-                                                24)
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.only(right: 20),
+                                  ),
+                                  Expanded(
+                                    child: Container(
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           boldText(
-                                              '￥${f.format((stateController.rentPeriod * stateController.cart[index].pricePerHour * stateController.priceRate))}',
+                                              stateController
+                                                  .cart[index].productName,
                                               Colors.black,
-                                              32),
+                                              isBreak1 ? 24 : 32),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: mediumText(
+                                                    '￥${f.format(stateController.cart[index].pricePerHour * stateController.priceRate)}/${stateController.unit}',
+                                                    Colors.black,
+                                                    isBreak1 ? 20 : 24),
+                                              ),
+                                              Container(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 8.0),
+                                                  child: boldText(
+                                                      '￥${f.format((stateController.rentPeriod * stateController.cart[index].pricePerHour * stateController.priceRate))}',
+                                                      Colors.black,
+                                                      isBreak1 ? 24 : 32),
+                                                ),
+                                              ),
+                                            ],
+                                          )
                                         ],
                                       ),
                                     ),
-                                  ]),
-                            ));
+                                  ),
+                                ]),
+                              )
+                            : Container());
                       }),
                 ),
               ),
@@ -156,6 +161,22 @@ class CartPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset:
+                                  Offset(3, 3), // changes position of shadow
+                            ),
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset:
+                                  Offset(-3, -3), // changes position of shadow
+                            ),
+                          ],
                         ),
                         padding:
                             EdgeInsets.symmetric(vertical: 6, horizontal: 8),
@@ -192,33 +213,46 @@ class CartPage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        CheckoutDialog());
-                              },
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        MyTheme.orange),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                )),
+                          InkWell(
+                            onTap: () {
+                              //
+                              if (stateController.cart.isEmpty) return;
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CheckoutDialog());
+                            },
+                            child: Container(
+                              constraints: BoxConstraints(minWidth: 70),
+                              decoration: BoxDecoration(
+                                color: MyTheme.orange,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: Offset(
+                                        3, 3), // changes position of shadow
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: Offset(
+                                        -3, -3), // changes position of shadow
+                                  ),
+                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 0),
-                                child: Text('checkout',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600)),
-                              )),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: Text('checkout',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  )),
+                            ),
+                          ),
                           SizedBox(
                             width: 16,
                           ),
@@ -228,6 +262,22 @@ class CartPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: Offset(
+                                        3, 3), // changes position of shadow
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 3,
+                                    offset: Offset(
+                                        -3, -3), // changes position of shadow
+                                  ),
+                                ],
                               ),
                               padding: EdgeInsets.fromLTRB(4, 4, 10, 4),
                               child: Row(
