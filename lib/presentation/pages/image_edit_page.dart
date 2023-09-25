@@ -47,8 +47,8 @@ class _ImageEditPageState extends State<ImageEditPage> {
         body: SingleChildScrollView(
           child: Center(
             child: Container(
-                margin: EdgeInsets.only(top: 30),
-                constraints: BoxConstraints(maxWidth: 400),
+                // margin: EdgeInsets.only(top: 30),
+                constraints: BoxConstraints(maxWidth: 500),
                 child: FutureBuilder(
                     future: firebase.fetchDocumentData(widget.productId),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -58,31 +58,35 @@ class _ImageEditPageState extends State<ImageEditPage> {
                             jsonDecode(bicycleMap['images']);
                         return Column(
                           children: [
-                            Container(
-                              width: mWidth - 50,
-                              height: mWidth - 50,
-                              padding: EdgeInsets.all(8),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  imageList![selectedIndex]['url'],
-                                  fit: BoxFit.fitWidth,
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: Container(
+                                constraints: BoxConstraints(maxWidth: 400),
+                                // width: mWidth - 50,
+                                margin: EdgeInsets.all(32),
+                                padding: EdgeInsets.all(8),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    imageList![selectedIndex]['url'],
+                                    fit: BoxFit.fitWidth,
+                                  ),
                                 ),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.6),
+                                        spreadRadius: 1.5,
+                                        blurRadius: 4,
+                                        offset: Offset(
+                                            0, 1), // changes position of shadow
+                                      ),
+                                    ]),
                               ),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.6),
-                                      spreadRadius: 1.5,
-                                      blurRadius: 4,
-                                      offset: Offset(
-                                          0, 1), // changes position of shadow
-                                    ),
-                                  ]),
                             ),
-                            SizedBox(height: 30),
+                            // SizedBox(height: 16),
                             Container(
                               padding: EdgeInsets.only(left: 8, top: 10),
                               height: 150,
@@ -93,19 +97,19 @@ class _ImageEditPageState extends State<ImageEditPage> {
                                 itemBuilder: (BuildContext context, int index) {
                                   return Column(
                                     children: [
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            selectedIndex = index;
-                                          });
-                                        },
-                                        child: Container(
-                                          margin: EdgeInsets.all(8),
-                                          padding: EdgeInsets.all(2),
-                                          width: 70,
-                                          height: 70,
-                                          child: index < imageList!.length
-                                              ? ClipRRect(
+                                      index < imageList.length
+                                          ? InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  selectedIndex = index;
+                                                });
+                                              },
+                                              child: Container(
+                                                margin: EdgeInsets.all(8),
+                                                padding: EdgeInsets.all(2),
+                                                width: 70,
+                                                height: 70,
+                                                child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                   child: imageList[index] != ''
@@ -115,23 +119,42 @@ class _ImageEditPageState extends State<ImageEditPage> {
                                                           fit: BoxFit.fitWidth,
                                                         )
                                                       : Container(),
-                                                )
-                                              : Container(),
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.6),
-                                                  spreadRadius: 1.5,
-                                                  blurRadius: 4,
-                                                  offset: Offset(0, 1),
                                                 ),
-                                              ]),
-                                        ),
-                                      ),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.6),
+                                                        spreadRadius: 1.5,
+                                                        blurRadius: 4,
+                                                        offset: Offset(0, 1),
+                                                      ),
+                                                    ]),
+                                              ),
+                                            )
+                                          : Container(
+                                              margin: EdgeInsets.all(8),
+                                              padding: EdgeInsets.all(2),
+                                              width: 70,
+                                              height: 70,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.6),
+                                                      spreadRadius: 1.5,
+                                                      blurRadius: 4,
+                                                      offset: Offset(0, 1),
+                                                    ),
+                                                  ]),
+                                            ),
 // button add or delete
                                       index < imageList.length
                                           ? ElevatedButton(
@@ -155,7 +178,7 @@ class _ImageEditPageState extends State<ImageEditPage> {
                                                 ),
                                               ),
                                               child: boldText(
-                                                  'delete', Colors.white, 18))
+                                                  'delete', Colors.white, 16))
                                           : ElevatedButton(
                                               onPressed: () async {
                                                 Map<String, dynamic> imageMap =

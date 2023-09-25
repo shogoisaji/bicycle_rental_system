@@ -1,5 +1,4 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
-import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/utils/rental_data_util.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/domain/rent_data.dart';
@@ -9,7 +8,6 @@ import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/rental_List_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class RentalListPage extends StatelessWidget {
   const RentalListPage({super.key});
@@ -18,8 +16,6 @@ class RentalListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     double mWidth = MediaQuery.of(context).size.width;
     FirebaseService firebase = FirebaseService();
-    MyDateFormat dateFormat = MyDateFormat();
-    var f = NumberFormat("#,###");
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
@@ -70,9 +66,8 @@ class RentalListPage extends StatelessWidget {
                                               child:
                                                   CircularProgressIndicator());
                                         } else if (snapshot.hasError) {
-                                          return Center(
-                                              child: Text(
-                                                  'Error: ${snapshot.error}'));
+                                          print('Error: ${snapshot.error}');
+                                          return Container();
                                         } else if (snapshot.hasData) {
                                           Bicycle bicycleData = snapshot.data!;
                                           return RentalListCard(

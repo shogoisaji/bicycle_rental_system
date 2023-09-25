@@ -39,6 +39,22 @@ class FirebaseService {
     }
   }
 
+// fetch rental data sort user
+  Future<List<DocumentSnapshot>?> fetchSortedByUser(String uid) async {
+    try {
+      QuerySnapshot snapshot = await db
+          .collection('rentalData')
+          .orderBy('rentalStartDate', descending: true)
+          .where('rentalUserID', isEqualTo: uid)
+          .get();
+
+      return snapshot.docs;
+    } catch (error) {
+      print(error);
+    }
+    return null;
+  }
+
 // fetch bicycle data
   Future<Bicycle?> fetchBicycleData(String productId) {
     return db.collection('items').doc(productId).get().then((value) {

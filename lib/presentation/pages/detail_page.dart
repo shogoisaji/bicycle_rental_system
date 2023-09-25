@@ -202,35 +202,6 @@ class _DetailPageState extends State<DetailPage> {
                                                           .bicycle.productId,
                                                     )),
                                           );
-                                          // Map<String, dynamic>? imageMap =
-                                          //     await FirebaseService()
-                                          //         .pickImage();
-                                          // if (imageMap == null) return;
-                                          // bool result = await FirebaseService()
-                                          //     .addImage(
-                                          //         widget.bicycle.productId,
-                                          //         imageMap);
-                                          // if (result) {
-                                          //   Get.snackbar(
-                                          //     "Success",
-                                          //     "Image added",
-                                          //     backgroundColor: Colors.blue,
-                                          //     snackPosition:
-                                          //         SnackPosition.BOTTOM,
-                                          //     maxWidth: 500,
-                                          //   );
-                                          //   Get.to(() => ListPage());
-                                          // } else {
-                                          //   print('error');
-                                          //   Get.snackbar(
-                                          //     "Error",
-                                          //     "Failed to add Image",
-                                          //     backgroundColor: Colors.red,
-                                          //     snackPosition:
-                                          //         SnackPosition.BOTTOM,
-                                          //     maxWidth: 500,
-                                          //   );
-                                          // }
                                         },
                                         style: ButtonStyle(
                                           backgroundColor:
@@ -245,7 +216,7 @@ class _DetailPageState extends State<DetailPage> {
                                           ),
                                         ),
                                         child: boldText(
-                                            'edit image', Colors.white, 18)),
+                                            'IMAGE EDIT', Colors.white, 18)),
                                   )
                                 : Container(),
 // under card

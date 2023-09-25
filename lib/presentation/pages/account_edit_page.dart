@@ -1,7 +1,6 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
-import 'package:bicycle_rental_system/presentation/pages/account_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
@@ -95,8 +94,8 @@ class _AccountEditPageState extends State<AccountEditPage> {
                     bool result = await FirebaseService().updateUserData(
                         authController.getUid(),
                         _nameController.text,
-                        _postalCodeController.text,
-                        _addressController.text);
+                        _addressController.text,
+                        _postalCodeController.text);
                     if (result) {
                       authController.loginUserName.value = _nameController.text;
                       Navigator.of(context).push(

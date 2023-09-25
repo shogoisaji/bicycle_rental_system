@@ -92,8 +92,8 @@ class CartPage extends StatelessWidget {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(15),
                                       child: Image.network(
-                                        stateController
-                                            .cart[index].imageUrls[0],
+                                        stateController.cart[index].images[0]
+                                            ['url'],
                                         fit: BoxFit.fitWidth,
                                       ),
                                     ),

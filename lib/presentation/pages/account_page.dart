@@ -1,10 +1,15 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
+import 'package:bicycle_rental_system/application/utils/rental_data_util.dart';
+import 'package:bicycle_rental_system/domain/bicycle_model.dart';
+import 'package:bicycle_rental_system/domain/rent_data.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/account_edit_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
 import 'package:bicycle_rental_system/presentation/widgets/account_text_box.dart';
+import 'package:bicycle_rental_system/presentation/widgets/rental_List_card.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -116,87 +121,79 @@ class _DetailPageState extends State<AccountPage> {
                       child: boldText('Rental History', Colors.grey, 24),
                     ),
                     Container(
-                        constraints:
-                            BoxConstraints(maxWidth: 500, minWidth: 300),
-                        padding: EdgeInsets.all(16),
+                      constraints: BoxConstraints(maxWidth: 500, minWidth: 300),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: MyTheme.lightBlue,
+                      ),
+                      margin: EdgeInsets.only(bottom: 16),
+                      height: 400,
+                      child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: MyTheme.lightBlue,
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
                         ),
-                        margin: EdgeInsets.only(bottom: 16),
-                        height: 400,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: ListView.builder(
-                            itemCount: 10,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                height: 80,
-                                margin: EdgeInsets.fromLTRB(
-                                    8, index == 0 ? 8 : 0, 8, 8),
-                                padding: EdgeInsets.all(8),
-                                // constraints: BoxConstraints(maxWidth: 600),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[400],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        width: 80,
-                                        height: 80,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        margin: EdgeInsets.only(right: 10),
-                                        padding: EdgeInsets.all(2),
-                                        // child: ClipRRect(
-                                        //   borderRadius: BorderRadius.circular(15),
-                                        //   child: Image.network(
-                                        //     stateController.cart[index].imageUrl,
-                                        //     fit: BoxFit.fitWidth,
-                                        //   ),
-                                        // ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              mediumText(
-                                                  '111111111', Colors.black, 24)
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.only(right: 20),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            boldText(
-                                                '121212', Colors.black, 32),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                              );
-                            },
-                          ),
-                        )),
+                        child: FutureBuilder(
+                            future: FirebaseService().fetchSortedByUser(uid),
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (snapshot.hasData) {
+                                List<DocumentSnapshot> docs = snapshot.data!;
+                                return ListView.builder(
+                                    itemCount: docs.length,
+                                    itemBuilder: (context, index) {
+                                      DocumentSnapshot<Object?> rentalDataMap =
+                                          docs[index];
+                                      RentalData rentalData =
+                                          RentalDataUtil.rentalDataFromMap(
+                                              rentalDataMap);
+//fetch bicycle data
+                                      return Padding(
+                                        padding: index == 0
+                                            ? const EdgeInsets.only(top: 8.0)
+                                            : const EdgeInsets.all(0),
+                                        child: FutureBuilder(
+                                            future: FirebaseService()
+                                                .fetchBicycleData(
+                                                    rentalData.bicycleID)
+                                                .timeout(Duration(seconds: 5)),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return Center(
+                                                    child:
+                                                        CircularProgressIndicator());
+                                              } else if (snapshot.hasError) {
+                                                print(
+                                                    'Error: ${snapshot.error}');
+                                                return Container();
+                                              } else if (snapshot.hasData) {
+                                                Bicycle bicycleData =
+                                                    snapshot.data!;
+                                                return RentalListCard(
+                                                  rentalData: rentalData,
+                                                  bicycleData: bicycleData,
+                                                );
+                                              } else {
+                                                return RentalListCard(
+                                                  rentalData: rentalData,
+                                                  bicycleData: null,
+                                                );
+                                              }
+                                            }),
+                                      );
+                                    });
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              } else {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              }
+                            }),
+                      ),
+                    ),
                   ],
                 ),
                 ElevatedButton(
