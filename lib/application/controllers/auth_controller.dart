@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 class AuthController extends GetxController {
   //put is main()
   static AuthController instance = Get.find();
-  StateController stateController = Get.find();
+  static StateController stateController = Get.find();
 
   late Rx<User?> _user;
   Rx<bool> isAdmin = false.obs;

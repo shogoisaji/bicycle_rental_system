@@ -5,6 +5,7 @@ import 'package:bicycle_rental_system/application/controllers/state_controller.d
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/cart_page.dart';
+import 'package:bicycle_rental_system/presentation/pages/image_edit_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/theme/color_theme.dart';
 import 'package:bicycle_rental_system/presentation/theme/text_theme.dart';
@@ -12,6 +13,7 @@ import 'package:bicycle_rental_system/presentation/widgets/cart_into_card.dart';
 import 'package:bicycle_rental_system/presentation/widgets/cart_period_count.dart';
 import 'package:bicycle_rental_system/presentation/widgets/time_unit_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class DetailPage extends StatefulWidget {
@@ -28,7 +30,7 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   void initState() {
-    selectedImageUrl = widget.bicycle.imageUrls[0];
+    selectedImageUrl = widget.bicycle.images[0]['url'];
     super.initState();
   }
 
@@ -115,13 +117,16 @@ class _DetailPageState extends State<DetailPage> {
                             Container(
                               width: 700 * rate,
                               height: 700 * rate,
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              padding: EdgeInsets.all(20),
+                              margin: EdgeInsets.symmetric(horizontal: 16),
+                              padding: EdgeInsets.all(8),
                               child: selectedImageUrl == ''
                                   ? Container()
-                                  : Image.network(
-                                      selectedImageUrl,
-                                      fit: BoxFit.fitWidth,
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        selectedImageUrl,
+                                        fit: BoxFit.fitWidth,
+                                      ),
                                     ),
                               decoration: BoxDecoration(
                                   color: Colors.white,
@@ -137,19 +142,19 @@ class _DetailPageState extends State<DetailPage> {
                                   ]),
                             ),
                             Container(
-                              padding: EdgeInsets.only(left: 20, top: 10),
+                              padding: EdgeInsets.only(left: 8, top: 10),
                               // width: 500 * rate,
                               height: 90,
                               child: ListView.builder(
                                 padding: EdgeInsets.zero,
                                 scrollDirection: Axis.horizontal,
-                                itemCount: widget.bicycle.imageUrls.length,
+                                itemCount: widget.bicycle.images.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return InkWell(
                                     onTap: () {
                                       setState(() {
                                         selectedImageUrl =
-                                            widget.bicycle.imageUrls[index];
+                                            widget.bicycle.images[index]['url'];
                                       });
                                     },
                                     child: Container(
@@ -157,9 +162,12 @@ class _DetailPageState extends State<DetailPage> {
                                       padding: EdgeInsets.all(2),
                                       width: 70,
                                       height: 70,
-                                      child: Image.network(
-                                        widget.bicycle.imageUrls[index],
-                                        fit: BoxFit.fitWidth,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(15),
+                                        child: Image.network(
+                                          widget.bicycle.images[index]['url'],
+                                          fit: BoxFit.fitWidth,
+                                        ),
                                       ),
                                       decoration: BoxDecoration(
                                           color: Colors.white,
@@ -179,13 +187,50 @@ class _DetailPageState extends State<DetailPage> {
                                 },
                               ),
                             ),
-// add image button
+// go to image edit page
                             authController.isAdmin.value
                                 ? Padding(
                                     padding: const EdgeInsets.only(left: 16.0),
                                     child: ElevatedButton(
                                         onPressed: () async {
-                                          //                          }
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ImageEditPage(
+                                                      productId: widget
+                                                          .bicycle.productId,
+                                                    )),
+                                          );
+                                          // Map<String, dynamic>? imageMap =
+                                          //     await FirebaseService()
+                                          //         .pickImage();
+                                          // if (imageMap == null) return;
+                                          // bool result = await FirebaseService()
+                                          //     .addImage(
+                                          //         widget.bicycle.productId,
+                                          //         imageMap);
+                                          // if (result) {
+                                          //   Get.snackbar(
+                                          //     "Success",
+                                          //     "Image added",
+                                          //     backgroundColor: Colors.blue,
+                                          //     snackPosition:
+                                          //         SnackPosition.BOTTOM,
+                                          //     maxWidth: 500,
+                                          //   );
+                                          //   Get.to(() => ListPage());
+                                          // } else {
+                                          //   print('error');
+                                          //   Get.snackbar(
+                                          //     "Error",
+                                          //     "Failed to add Image",
+                                          //     backgroundColor: Colors.red,
+                                          //     snackPosition:
+                                          //         SnackPosition.BOTTOM,
+                                          //     maxWidth: 500,
+                                          //   );
+                                          // }
                                         },
                                         style: ButtonStyle(
                                           backgroundColor:
@@ -200,7 +245,7 @@ class _DetailPageState extends State<DetailPage> {
                                           ),
                                         ),
                                         child: boldText(
-                                            'add image', Colors.white, 18)),
+                                            'edit image', Colors.white, 18)),
                                   )
                                 : Container(),
 // under card

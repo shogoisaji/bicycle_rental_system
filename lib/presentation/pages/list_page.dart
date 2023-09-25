@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bicycle_rental_system/application/config/config.dart';
 import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
@@ -250,7 +252,8 @@ class _DetailPageState extends State<ListPage> {
                                               ['description'],
                                           pricePerHour: docs[index]
                                               ['pricePerHour'],
-                                          imageUrls: docs[index]['imageUrl']);
+                                          images: jsonDecode(
+                                              docs[index]['images']));
                                       if (index == 1 && columnCount != 2) {
                                         return StaggeredGridTile.count(
                                             crossAxisCellCount: 2,

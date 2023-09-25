@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bicycle_rental_system/application/config/date_format.dart';
 import 'package:bicycle_rental_system/application/controllers/auth_controller.dart';
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
@@ -40,12 +42,13 @@ class FirebaseService {
 // fetch bicycle data
   Future<Bicycle?> fetchBicycleData(String productId) {
     return db.collection('items').doc(productId).get().then((value) {
+      List<dynamic> imageList = jsonDecode(value.data()!['images']);
       if (value.exists) {
         return Bicycle(
           productId: productId,
           productName: value.data()!['productName'],
           description: value.data()!['description'],
-          imageUrls: value.data()!['imageUrl'],
+          images: imageList,
           pricePerHour: value.data()!['pricePerHour'],
         );
       } else {
@@ -79,10 +82,7 @@ class FirebaseService {
 // update user data
   Future<bool> updateUserData(
       String uid, String name, String address, String postalCode) async {
-    var result = await FirebaseFirestore.instance
-        .collection('userData')
-        .doc(uid)
-        .update({
+    var result = await db.collection('userData').doc(uid).update({
       'userName': name,
       'userAddress': address,
       'postalCode': postalCode,
@@ -104,26 +104,23 @@ class FirebaseService {
   Future<String> incrementBicycleId() async {
     DocumentReference counterRef =
         db.collection('settings').doc('BicycleSerialID');
-    return db.runTransaction((transaction) async {
-      DocumentSnapshot counterSnapshot = await transaction.get(counterRef);
-      if (!counterSnapshot.exists) {
-        transaction.set(counterRef, {'currentBicycleID': '000001'});
-        return '000001';
+    DocumentSnapshot counterSnapshot = await counterRef.get();
+    if (!counterSnapshot.exists) {
+      await counterRef.set({'currentBicycleID': '000001'});
+      return '000001';
+    } else {
+      Map<String, dynamic>? data =
+          counterSnapshot.data() as Map<String, dynamic>?;
+      if (data != null) {
+        int updatedProductCounter = int.parse(data['currentBicycleID']) + 1;
+        String updatedProductString =
+            updatedProductCounter.toString().padLeft(6, "0");
+        await counterRef.update({'currentBicycleID': updatedProductString});
+        return updatedProductString;
       } else {
-        Map<String, dynamic>? data =
-            counterSnapshot.data() as Map<String, dynamic>?;
-        if (data != null) {
-          int updatedProductCounter = int.parse(data['currentBicycleID']) + 1;
-          String updatedProductString =
-              updatedProductCounter.toString().padLeft(6, "0");
-          transaction
-              .update(counterRef, {'currentBicycleID': updatedProductString});
-          return updatedProductString;
-        } else {
-          throw Exception("Invalid data");
-        }
+        throw Exception("Invalid data");
       }
-    });
+    }
   }
 
 // RentSerialId+1
@@ -153,20 +150,20 @@ class FirebaseService {
   }
 
 // Registration Bicycle Data
-  Future<bool> registrationData(Bicycle bicycle) async {
-    String imageUrl = await uploadImage(
-        bicycle.productId,
-        stateController.memory.value,
-        bicycle.productId.toString() + bicycle.productName);
-    bicycle.imageUrls = [imageUrl];
+  Future<bool> registrationData(
+      Bicycle bicycle, Map<String, dynamic> imageMap) async {
+    Map<String, String> imageSavedData = await uploadImage(
+      bicycle.productId,
+      imageMap,
+    );
+    List<dynamic> images = [imageSavedData];
 
-    var result = await FirebaseFirestore.instance
-        .collection('items')
-        .doc(bicycle.productId)
-        .set({
+    String jsonImages = jsonEncode(images);
+
+    var result = await db.collection('items').doc(bicycle.productId).set({
       'productName': bicycle.productName,
       'description': bicycle.description,
-      'imageUrl': imageUrl,
+      'images': jsonImages,
       'pricePerHour': bicycle.pricePerHour,
     }).then((void value) {
       return true;
@@ -183,29 +180,150 @@ class FirebaseService {
   }
 
 // upload image to firebase storage
-  Future<String> uploadImage(
-      String productId, Uint8List imageMemory, String fileName) async {
-    var metadata = SettableMetadata(
-      contentType: "image/jpeg",
-    );
-    Reference reference =
-        FirebaseStorage.instance.ref('images/$productId/$fileName');
+  Future<Map<String, String>> uploadImage(
+      String productId, Map<String, dynamic> imageMap) async {
+    String contentType = '';
+    Uint8List imageMemory = imageMap['image'];
+    String imageFormat = imageMap['format'];
+    String fileName = '${productId}_${DateTime.now().toString()}';
+    String fileExtension = '';
+    if (imageFormat == 'jpeg' || imageFormat == 'jpg') {
+      contentType = 'image/jpeg';
+      fileExtension = '.jpeg';
+    } else if (imageFormat == 'png') {
+      contentType = 'image/png';
+      fileExtension = '.png';
+    }
+    String filePath = 'images/$productId/$fileName$fileExtension';
+
+    SettableMetadata metadata = SettableMetadata(contentType: contentType);
+
+    Reference reference = FirebaseStorage.instance.ref(filePath);
     UploadTask uploadTask = reference.putData(imageMemory, metadata);
 
     TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
     String downloadUrl = await snapshot.ref.getDownloadURL();
 
-    return downloadUrl;
+    return {'filePath': filePath, 'url': downloadUrl};
   }
 
-  // Future<bool> afterAddImage() async {
-  //   // dfafjadfa
-  // }
+// add image to firestore & firestrage
+  Future<bool> addImage(String productId, Map<String, dynamic> imageMap) async {
+    Map<String, String> imageSavedData = await uploadImage(
+      productId,
+      imageMap,
+    );
 
-// Delete FireStore Data
+    Map<String, dynamic>? bicycleData = await fetchDocumentData(productId);
+    if (bicycleData == null) return false;
+
+    List<dynamic> currentJson = jsonDecode(bicycleData['images']);
+    currentJson.add(imageSavedData);
+
+    String jsonImages = jsonEncode(currentJson);
+
+    var result = await db.collection('items').doc(productId).update({
+      'images': jsonImages,
+    }).then((void value) {
+      return true;
+    }).catchError((error) {
+      Get.snackbar(
+        "Error",
+        "Failed to upload data",
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    });
+    return result;
+  }
+
+// delete firestore data
   Future<bool> deleteData(String doc) async {
     try {
-      await FirebaseFirestore.instance.collection('items').doc(doc).delete();
+      await db.collection('items').doc(doc).delete();
+      try {
+        bool imageDeleteResult = await deleteFireStrageFolder(doc);
+        if (!imageDeleteResult) {
+          Get.snackbar(
+            'error',
+            'Failed to delete image',
+            backgroundColor: Colors.red,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return false;
+        }
+      } catch (error) {
+        Get.snackbar(
+          'error',
+          'Failed to delete image',
+          backgroundColor: Colors.red,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return false;
+      }
+      return true;
+    } catch (error) {
+      Get.snackbar(
+        "Error",
+        "Failed to delete data",
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    }
+  }
+
+// delete firestrage folder
+  Future<bool> deleteFireStrageFolder(String productId) async {
+    try {
+      ListResult result =
+          await FirebaseStorage.instance.ref('images/$productId').listAll();
+
+      for (Reference ref in result.items) {
+        await ref.delete();
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+// delete 1 product all Image
+  Future<bool> deleteProductImage(String productId) async {
+    try {
+      ListResult result =
+          await FirebaseStorage.instance.ref('images/$productId').listAll();
+
+      for (Reference ref in result.items) {
+        await ref.delete();
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+// delete 1 Image
+  Future<bool> deleteOneImage(String productId, int index) async {
+    try {
+      Bicycle? bicycleData = await fetchBicycleData(productId);
+      if (bicycleData == null) return false;
+
+      Map<String, dynamic> imagesData = (bicycleData.images)[index];
+      String? deleteFilePath = imagesData['filePath'];
+
+      await FirebaseStorage.instance.ref(deleteFilePath).delete();
+
+      List<dynamic> imagesList = bicycleData.images;
+      imagesList.removeAt(index);
+
+      String jsonImages = jsonEncode(imagesList);
+
+      await db.collection('items').doc(productId).update({
+        'images': jsonImages,
+      });
+
       return true;
     } catch (error) {
       return false;
@@ -213,13 +331,15 @@ class FirebaseService {
   }
 
 // image pick
-  Future<Uint8List?> pickImage() async {
+  Future<Map<String, dynamic>?> pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       final memory = await pickedFile.readAsBytes();
-      return memory;
+      final imageFormat = pickedFile.path.split('.').last;
+
+      return {'image': memory, 'format': imageFormat};
     } else {
       print('No image selected.');
       return null;
@@ -228,10 +348,8 @@ class FirebaseService {
 
 // Upload Rent Data
   Future<bool> uploadRentalData(RentalData rentalData) async {
-    var result = await FirebaseFirestore.instance
-        .collection('rentalData')
-        .doc(rentalData.rentalID)
-        .set({
+    var result =
+        await db.collection('rentalData').doc(rentalData.rentalID).set({
       'bicycleID': rentalData.bicycleID,
       'rentalStartDate': rentalData.rentalStartDate,
       'rentalEndDate': rentalData.rentalEndDate,

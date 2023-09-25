@@ -1,5 +1,4 @@
 import 'package:bicycle_rental_system/application/config/config.dart';
-import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
@@ -9,23 +8,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class RegistrationPage extends StatelessWidget {
+class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
+
+  @override
+  _RegistrationPageState createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends State<RegistrationPage> {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
+  Map<String, dynamic> imageMap = {};
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     double mWidth = MediaQuery.of(context).size.width;
-    StateController stateController = Get.find();
     FirebaseService firebase = FirebaseService();
-    TextEditingController _nameController = TextEditingController();
-    TextEditingController _descriptionController = TextEditingController();
-    TextEditingController _priceController = TextEditingController();
-    Uint8List? memory;
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
-            stateController.memoryRefresh();
             Navigator.of(context).pop();
           },
         ),
@@ -111,21 +123,21 @@ class RegistrationPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Obx(() => Container(
-                                width: 200,
-                                height: 200,
-                                padding: EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(color: Colors.black87),
-                                  color: Colors.white,
-                                ),
-                                child: stateController.isImageSelected.value
-                                    ? Image.memory(stateController.memory.value)
-                                    : Center(
-                                        child: mediumText(
-                                            'No Image', Colors.black54, 24)),
-                              )),
+                          Container(
+                            width: 200,
+                            height: 200,
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.black87),
+                              color: Colors.white,
+                            ),
+                            child: imageMap['image'] != null
+                                ? Image.memory(imageMap['image'])
+                                : Center(
+                                    child: mediumText(
+                                        'No Image', Colors.black54, 24)),
+                          ),
                           ElevatedButton(
                               style: ButtonStyle(
                                   padding:
@@ -142,10 +154,9 @@ class RegistrationPage extends StatelessWidget {
                                     ),
                                   )),
                               onPressed: () async {
-                                memory = await firebase.pickImage();
-                                if (memory == null) return;
-                                stateController.memory.value = memory!;
-                                stateController.isImageSelected.value = true;
+                                imageMap = await firebase.pickImage()
+                                    as Map<String, dynamic>;
+                                setState(() {});
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -173,7 +184,7 @@ class RegistrationPage extends StatelessWidget {
                           ),
                         )),
                     onPressed: () async {
-                      if (memory == null ||
+                      if (imageMap['image'] == null ||
                           _nameController.text.isEmpty ||
                           _priceController.text.isEmpty) {
                         Get.snackbar(
@@ -189,11 +200,11 @@ class RegistrationPage extends StatelessWidget {
                           productId: productId,
                           productName: _nameController.text,
                           description: _descriptionController.text,
-                          imageUrls: [''],
+                          images: imageMap['image'],
                           pricePerHour: int.parse(_priceController.text));
-                      bool success = await firebase.registrationData(bicycle);
+                      bool success =
+                          await firebase.registrationData(bicycle, imageMap);
                       if (success) {
-                        stateController.memoryRefresh();
                         Get.snackbar(
                           "Success",
                           "Successfully uploaded data",

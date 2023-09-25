@@ -67,7 +67,7 @@ class _RentalListCardState extends State<RentalListCard> {
               child: widget.bicycleData == null
                   ? Container()
                   : Image.network(
-                      widget.bicycleData!.imageUrls[0],
+                      widget.bicycleData!.images[0]['url'],
                       fit: BoxFit.fitWidth,
                     ),
             ),
