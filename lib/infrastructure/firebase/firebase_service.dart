@@ -168,10 +168,11 @@ class FirebaseService {
 // Registration Bicycle Data
   Future<bool> registrationData(
       Bicycle bicycle, Map<String, dynamic> imageMap) async {
-    Map<String, String> imageSavedData = await uploadImage(
+    Map<String, String>? imageSavedData = await uploadImage(
       bicycle.productId,
       imageMap,
     );
+    if (imageSavedData == null) return false;
     List<dynamic> images = [imageSavedData];
 
     String jsonImages = jsonEncode(images);
@@ -196,8 +197,9 @@ class FirebaseService {
   }
 
 // upload image to firebase storage
-  Future<Map<String, String>> uploadImage(
+  Future<Map<String, String>?> uploadImage(
       String productId, Map<String, dynamic> imageMap) async {
+    if (authController.isAdmin.value) return null;
     String contentType = '';
     Uint8List imageMemory = imageMap['image'];
     String imageFormat = imageMap['format'];
@@ -225,11 +227,11 @@ class FirebaseService {
 
 // add image to firestore & firestrage
   Future<bool> addImage(String productId, Map<String, dynamic> imageMap) async {
-    Map<String, String> imageSavedData = await uploadImage(
+    Map<String, String>? imageSavedData = await uploadImage(
       productId,
       imageMap,
     );
-
+    if (imageSavedData == null) return false;
     Map<String, dynamic>? bicycleData = await fetchDocumentData(productId);
     if (bicycleData == null) return false;
 

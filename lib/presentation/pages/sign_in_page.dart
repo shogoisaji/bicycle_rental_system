@@ -113,6 +113,7 @@ class _SignInPageState extends State<SignInPage> {
                 InkWell(
                   onTap: () {
                     //google sign in
+                    authController.googleLogin();
                   },
                   child: Container(
                       width: 300,
