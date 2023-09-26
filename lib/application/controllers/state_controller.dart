@@ -58,7 +58,6 @@ class StateController extends GetxController {
   void addCart(Bicycle bicycle) {
     for (Bicycle b in cart) {
       if (b.productId == bicycle.productId) {
-        print('already added');
         Get.snackbar(
           'Already added',
           'You have already added this item to your cart.',
@@ -73,7 +72,6 @@ class StateController extends GetxController {
     cart.add(bicycle);
     calculateTotalPrice();
     update();
-    print('add cart : ${bicycle.productName}');
   }
 
   void removeCart(Bicycle bicycle) {
@@ -84,7 +82,6 @@ class StateController extends GetxController {
     }
     calculateTotalPrice();
     update();
-    print('remove cart : ${bicycle.productName}');
   }
 
   void clearCart() {
@@ -100,7 +97,6 @@ class StateController extends GetxController {
       total += b.pricePerHour * priceRate * rentPeriod.value;
     }
     totalPrice.value = total;
-    print(totalPrice.value);
     update();
   }
 

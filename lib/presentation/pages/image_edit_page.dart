@@ -159,6 +159,8 @@ class _ImageEditPageState extends State<ImageEditPage> {
                                       index < imageList.length
                                           ? ElevatedButton(
                                               onPressed: () async {
+                                                if (imageList.length == 1)
+                                                  return;
                                                 await firebase.deleteOneImage(
                                                     widget.productId, index);
                                                 setState(() {});

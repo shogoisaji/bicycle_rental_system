@@ -199,7 +199,7 @@ class FirebaseService {
 // upload image to firebase storage
   Future<Map<String, String>?> uploadImage(
       String productId, Map<String, dynamic> imageMap) async {
-    if (authController.isAdmin.value) return null;
+    if (!authController.isAdmin.value) return null;
     String contentType = '';
     Uint8List imageMemory = imageMap['image'];
     String imageFormat = imageMap['format'];
@@ -247,7 +247,7 @@ class FirebaseService {
     }).catchError((error) {
       Get.snackbar(
         "Error",
-        "Failed to upload data",
+        "Failed to add image",
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -354,10 +354,22 @@ class FirebaseService {
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      final memory = await pickedFile.readAsBytes();
-      final imageFormat = pickedFile.path.split('.').last;
+      int size = await pickedFile.length();
+      if (size <= 1024 * 1024) {
+        final memory = await pickedFile.readAsBytes();
+        final imageFormat = pickedFile.path.split('.').last;
 
-      return {'image': memory, 'format': imageFormat};
+        return {'image': memory, 'format': imageFormat};
+      } else {
+        Get.snackbar(
+          "Error",
+          "Image size is under 1MB",
+          backgroundColor: Colors.red,
+          snackPosition: SnackPosition.BOTTOM,
+          maxWidth: 500,
+        );
+        return null;
+      }
     } else {
       print('No image selected.');
       return null;

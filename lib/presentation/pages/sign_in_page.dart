@@ -129,11 +129,6 @@ class _SignInPageState extends State<SignInPage> {
                 SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      authController.login('test@gmail.com', 'passpass');
-                    },
-                    child: Text('Test Admin')),
               ],
             ),
           ),

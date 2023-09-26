@@ -65,7 +65,7 @@ class CartPage extends StatelessWidget {
               child: Container(
                 width: 600,
                 child: Expanded(
-                  child: ListView.builder(
+                  child: Obx(() => ListView.builder(
                       itemCount: stateController.cart.length,
                       itemBuilder: (context, index) {
                         return Obx(() => stateController.cart.isNotEmpty
@@ -106,11 +106,33 @@ class CartPage extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          boldText(
-                                              stateController
-                                                  .cart[index].productName,
-                                              Colors.black,
-                                              isBreak1 ? 24 : 32),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              boldText(
+                                                  stateController
+                                                      .cart[index].productName,
+                                                  Colors.black,
+                                                  isBreak1 ? 24 : 32),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 8.0),
+                                                child: IconButton(
+                                                  onPressed: () {
+                                                    stateController.removeCart(
+                                                        stateController
+                                                            .cart[index]);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.white,
+                                                    size: 26,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -141,7 +163,7 @@ class CartPage extends StatelessWidget {
                                 ]),
                               )
                             : Container());
-                      }),
+                      })),
                 ),
               ),
             ),

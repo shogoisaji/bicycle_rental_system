@@ -4,7 +4,6 @@ import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/sign_in_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -18,7 +17,7 @@ class AuthController extends GetxController {
 
   late Rx<User?> _user;
   Rx<bool> isAdmin = false.obs;
-  Rx<String> loginUserName = 'none'.obs;
+  Rx<String> loginUserName = ' '.obs;
 
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -97,7 +96,19 @@ class AuthController extends GetxController {
         idToken: googleAuth?.idToken,
       );
       await _auth.signInWithCredential(credential);
+      User _user = _auth.currentUser!;
+      String _email = _user.email!;
+      String _uid = _user.uid;
+      var userData = await FirebaseService().fetchUserData(_uid);
+      if (userData == null) {
+        await FirebaseFirestore.instance.collection('userData').doc(_uid).set({
+          'userName': _email,
+          'userEmail': _email,
+          'isAdmin': false,
+        });
+      }
     } catch (e) {
+      print(e);
       Get.snackbar(
         "Error",
         e.toString(), // errorMessageを表示
