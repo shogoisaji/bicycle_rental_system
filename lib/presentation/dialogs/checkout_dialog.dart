@@ -22,7 +22,7 @@ class CheckoutDialog extends StatelessWidget {
       title: boldText('Check Rental Info', Colors.black, 24),
       content: Container(
         padding: EdgeInsets.only(left: 16),
-        height: 280,
+        height: 280 + stateController.cart.length * 16,
         width: 100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

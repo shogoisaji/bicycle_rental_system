@@ -87,7 +87,7 @@ class CartPage extends StatelessWidget {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    margin: EdgeInsets.only(right: 20),
+                                    margin: EdgeInsets.only(right: 16),
                                     padding: EdgeInsets.all(2),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(15),
@@ -110,11 +110,13 @@ class CartPage extends StatelessWidget {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              boldText(
-                                                  stateController
-                                                      .cart[index].productName,
-                                                  Colors.black,
-                                                  isBreak1 ? 24 : 32),
+                                              Expanded(
+                                                child: boldText(
+                                                    stateController.cart[index]
+                                                        .productName,
+                                                    Colors.black,
+                                                    isBreak1 ? 24 : 32),
+                                              ),
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     right: 8.0),
@@ -133,29 +135,30 @@ class CartPage extends StatelessWidget {
                                               )
                                             ],
                                           ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: mediumText(
-                                                    '￥${f.format(stateController.cart[index].pricePerHour * stateController.priceRate)}/${stateController.unit}',
-                                                    Colors.black,
-                                                    isBreak1 ? 20 : 24),
-                                              ),
-                                              Container(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8.0),
-                                                  child: boldText(
-                                                      '￥${f.format((stateController.rentPeriod * stateController.cart[index].pricePerHour * stateController.priceRate))}',
-                                                      Colors.black,
-                                                      isBreak1 ? 24 : 32),
-                                                ),
-                                              ),
-                                            ],
-                                          )
+                                          Obx(() => Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: mediumText(
+                                                        '￥${f.format(stateController.cart[index].pricePerHour * stateController.priceRate)}/${stateController.unit}',
+                                                        Colors.black,
+                                                        isBreak1 ? 20 : 24),
+                                                  ),
+                                                  Container(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 8.0),
+                                                      child: boldText(
+                                                          '￥${f.format((stateController.rentPeriod * stateController.cart[index].pricePerHour * stateController.priceRate))}',
+                                                          Colors.black,
+                                                          isBreak1 ? 24 : 32),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )),
                                         ],
                                       ),
                                     ),
@@ -305,13 +308,16 @@ class CartPage extends StatelessWidget {
                               child: Row(
                                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  mediumText('Total ',
-                                      Colors.black.withOpacity(0.7), 20),
-                                  mediumText('￥', Colors.black, 22),
+                                  mediumText(
+                                      'Total ',
+                                      Colors.black.withOpacity(0.7),
+                                      isBreak1 ? 16 : 20),
+                                  mediumText(
+                                      '￥', Colors.black, isBreak1 ? 18 : 22),
                                   mediumText(
                                       '${f.format(stateController.totalPrice.value)}',
                                       Colors.black,
-                                      28),
+                                      isBreak1 ? 24 : 28),
                                 ],
                               ),
                             ),

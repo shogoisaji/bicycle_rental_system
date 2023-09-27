@@ -89,62 +89,59 @@ class _RentalListCardState extends State<RentalListCard> {
                 ),
               ),
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            mediumText('Bicycle', Colors.black, 12),
-                            widget.bicycleData == null
-                                ? Container()
-                                : mediumText(
-                                    '・${widget.bicycleData!.productName}',
-                                    Colors.black,
-                                    16),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            mediumText('User', Colors.black, 12),
-                            mediumText('・${rentalUserName}', Colors.black, 16),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Column(
-                          children: [
-                            mediumText(
-                                dateFormat.formatForDisplay(
-                                    widget.rentalData.rentalStartDate),
-                                Colors.black,
-                                14),
-                            Icon(
-                              Icons.arrow_downward,
-                              size: 10,
-                            ),
-                            mediumText(
-                                dateFormat.formatForDisplay(
-                                    widget.rentalData.rentalEndDate),
-                                Colors.black,
-                                14),
-                          ],
-                        ),
-                        boldText('￥${f.format(widget.rentalData.rentalPrice)}',
-                            Colors.black, 22),
-                      ],
-                    ),
-                  ],
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          mediumText('Bicycle', Colors.black, 12),
+                          widget.bicycleData == null
+                              ? Container()
+                              : mediumText(
+                                  '・${widget.bicycleData!.productName}',
+                                  Colors.black,
+                                  16),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          mediumText('User', Colors.black, 12),
+                          mediumText('・${rentalUserName}', Colors.black, 16),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Column(
+                    children: [
+                      mediumText(
+                          dateFormat.formatForDisplay(
+                              widget.rentalData.rentalStartDate),
+                          Colors.black,
+                          14),
+                      Icon(
+                        Icons.arrow_downward,
+                        size: 10,
+                      ),
+                      mediumText(
+                          dateFormat.formatForDisplay(
+                              widget.rentalData.rentalEndDate),
+                          Colors.black,
+                          14),
+                    ],
+                  ),
+                  boldText('￥${f.format(widget.rentalData.rentalPrice)}',
+                      Colors.black, 22),
+                ],
               ),
             ],
           ),
