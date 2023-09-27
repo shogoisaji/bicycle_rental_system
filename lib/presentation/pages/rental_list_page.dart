@@ -31,13 +31,11 @@ class RentalListPage extends StatelessWidget {
         body: Center(
           child: Container(
             width: 600,
-            child: Expanded(
-              child: Container(
-// fetch rental data
+            child: Column(
+              children: [
+                Expanded(
                   child: FutureBuilder(
-                      future: firebase
-                          .fetchAllRentData()
-                          .timeout(Duration(seconds: 5)),
+                      future: firebase.fetchAllRentData(),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           List<DocumentSnapshot> docs = snapshot.data!;
@@ -49,7 +47,7 @@ class RentalListPage extends StatelessWidget {
                                 RentalData rentalData =
                                     RentalDataUtil.rentalDataFromMap(
                                         rentalDataMap);
-//fetch bicycle data
+                                //fetch bicycle data
                                 return Padding(
                                   padding: index == 0
                                       ? const EdgeInsets.only(top: 8.0)
@@ -89,7 +87,9 @@ class RentalListPage extends StatelessWidget {
                         } else {
                           return Center(child: CircularProgressIndicator());
                         }
-                      })),
+                      }),
+                ),
+              ],
             ),
           ),
         ));
