@@ -59,19 +59,16 @@ class _CartIntoCardState extends State<CartIntoCard> {
                           AspectRatio(
                             aspectRatio: 1.5,
                             child: Container(
-                              width: double.infinity,
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
                                 color: Colors.white,
                               ),
-                              child: Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.network(
-                                    widget.bicycle.images[0]['url'],
-                                    fit: BoxFit.contain,
-                                  ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.network(
+                                  widget.bicycle.images[0]['url'],
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),

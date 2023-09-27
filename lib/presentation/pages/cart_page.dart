@@ -62,13 +62,13 @@ class CartPage extends StatelessWidget {
         body: Column(
           children: [
             Expanded(
-              child: Container(
-                width: 600,
-                child: Expanded(
+              child: Center(
+                child: Container(
+                  width: 600,
                   child: Obx(() => ListView.builder(
                       itemCount: stateController.cart.length,
                       itemBuilder: (context, index) {
-                        return Obx(() => stateController.cart.isNotEmpty
+                        return stateController.cart.isNotEmpty
                             ? Container(
                                 height: 120,
                                 margin: EdgeInsets.fromLTRB(
@@ -162,7 +162,7 @@ class CartPage extends StatelessWidget {
                                   ),
                                 ]),
                               )
-                            : Container());
+                            : Container();
                       })),
                 ),
               ),

@@ -316,19 +316,17 @@ class _DetailPageState extends State<ListPage> {
                                 ),
                               ],
                             ),
-                            Container(
-                              child: Expanded(
-                                  child: Obx(
-                                () => ListView.builder(
-                                  itemCount: stateController.cart.length,
-                                  itemBuilder: (context, index) {
-                                    print(stateController.cart.length);
-                                    return CartIntoCard(
-                                        bicycle: stateController.cart[index]);
-                                  },
-                                ),
-                              )),
-                            ),
+                            Expanded(
+                                child: Obx(
+                              () => ListView.builder(
+                                itemCount: stateController.cart.length,
+                                itemBuilder: (context, index) {
+                                  print(stateController.cart.length);
+                                  return CartIntoCard(
+                                      bicycle: stateController.cart[index]);
+                                },
+                              ),
+                            )),
 // right under checkout
                             Container(
                               padding: EdgeInsets.only(top: 8),

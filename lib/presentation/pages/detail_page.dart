@@ -4,6 +4,7 @@ import 'package:bicycle_rental_system/application/controllers/auth_controller.da
 import 'package:bicycle_rental_system/application/controllers/state_controller.dart';
 import 'package:bicycle_rental_system/domain/bicycle_model.dart';
 import 'package:bicycle_rental_system/infrastructure/firebase/firebase_service.dart';
+import 'package:bicycle_rental_system/presentation/dialogs/checkout_dialog.dart';
 import 'package:bicycle_rental_system/presentation/pages/cart_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/image_edit_page.dart';
 import 'package:bicycle_rental_system/presentation/pages/list_page.dart';
@@ -25,8 +26,36 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  AuthController authController = Get.find();
+  AuthController authController = Get.find<AuthController>();
+  StateController stateController = Get.find<StateController>();
   String selectedImageUrl = '';
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2033),
+    );
+
+    if (selectedDate != null) {
+      final TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (selectedTime != null) {
+        DateTime selectedDateTime = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute);
+
+        stateController.rentStartDate.value = selectedDateTime;
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -37,10 +66,10 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     double mWidth = MediaQuery.of(context).size.width;
+    MyDateFormat dateFormat = MyDateFormat();
+
     double cardWidth = 0;
     double rate = 0;
-    AuthController authController = Get.find<AuthController>();
-    StateController stateController = Get.find<StateController>();
 
     if (mWidth > BREAKPOINT1) {
       cardWidth = mWidth / 2;
@@ -125,7 +154,7 @@ class _DetailPageState extends State<DetailPage> {
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
                                         selectedImageUrl,
-                                        fit: BoxFit.fitWidth,
+                                        fit: BoxFit.contain,
                                       ),
                                     ),
                               decoration: BoxDecoration(
@@ -415,94 +444,181 @@ class _DetailPageState extends State<DetailPage> {
                             ),
 // right under checkout
                             Container(
-                                color: MyTheme.blue,
-                                padding: EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    cartPeriodCount(),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              //
+                              padding: EdgeInsets.only(top: 8),
+                              child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: mWidth < 800 ? 10 : 20),
+                                  decoration: BoxDecoration(
+                                    color: MyTheme.blue,
+                                    border: Border(
+                                        top: BorderSide(
+                                            width: 1,
+                                            color:
+                                                Colors.white.withOpacity(0.7))),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 3,
+                                        offset: Offset(0,
+                                            -3), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          cartPeriodCount(),
+                                          InkWell(
+                                            onTap: () {
+                                              _selectDateTime(context);
                                             },
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(MyTheme.orange),
-                                              shape: MaterialStateProperty.all<
-                                                      RoundedRectangleBorder>(
-                                                  RoundedRectangleBorder(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                              )),
-                                            ),
-                                            child: mWidth > 900
-                                                ? Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 4),
-                                                    child: boldText('checkout',
-                                                        Colors.white, 20),
-                                                  )
-                                                : Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                vertical: 4,
-                                                                horizontal: 0),
-                                                        child: Text(
-                                                            'check\nout',
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: TextStyle(
-                                                                fontSize: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600)),
-                                                      ),
-                                                    ],
-                                                  )),
-                                        (Obx(
-                                          () => Container(
-                                            constraints:
-                                                BoxConstraints(minWidth: 70),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            padding: EdgeInsets.fromLTRB(
-                                                4, 4, 10, 4),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                mediumText(
-                                                    '￥', Colors.black, 22),
-                                                mediumText(
-                                                    '${f.format(stateController.totalPrice.value)}',
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(3,
+                                                        3), // changes position of shadow
+                                                  ),
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(-3,
+                                                        -3), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 6, horizontal: 8),
+                                              child: Obx(
+                                                () => mediumText(
+                                                    dateFormat
+                                                        .formatForDateTime(
+                                                            stateController
+                                                                .rentStartDate
+                                                                .value),
                                                     Colors.black,
-                                                    22),
-                                              ],
+                                                    16),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              //
+                                              if (stateController.cart.isEmpty)
+                                                return;
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          CheckoutDialog());
+                                            },
+                                            child: Container(
+                                              constraints:
+                                                  BoxConstraints(minWidth: 70),
+                                              decoration: BoxDecoration(
+                                                color: MyTheme.orange,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(3,
+                                                        3), // changes position of shadow
+                                                  ),
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(-3,
+                                                        -3), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 16),
+                                              child: Text('checkout',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20,
+                                                  )),
                                             ),
                                           ),
-                                        ))
-                                      ],
-                                    ),
-                                  ],
-                                ))
+                                          (Obx(
+                                            () => Container(
+                                              constraints:
+                                                  BoxConstraints(minWidth: 70),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(3,
+                                                        3), // changes position of shadow
+                                                  ),
+                                                  BoxShadow(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: Offset(-3,
+                                                        -3), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  4, 4, 10, 4),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  mediumText(
+                                                      '￥', Colors.black, 22),
+                                                  mediumText(
+                                                      '${f.format(stateController.totalPrice.value)}',
+                                                      Colors.black,
+                                                      22),
+                                                ],
+                                              ),
+                                            ),
+                                          ))
+                                        ],
+                                      ),
+                                    ],
+                                  )),
+                            )
                           ],
                         ),
                       ],
