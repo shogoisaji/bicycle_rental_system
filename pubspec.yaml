@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  go_router:
   google_sign_in: ^6.1.5
   google_fonts:
   firebase_auth:

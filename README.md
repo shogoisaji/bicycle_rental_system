@@ -1,16 +1,23 @@
-# bicycle_rental_system
+#サイクルレンタルアプリ
+このアプリは、ユーザーが自転車をレンタルすることができる自転車レンタルサービスアプリです。
 
-A new Flutter project.
+#概要
+ユーザーはアプリを起動すると利用可能なサイクルの一覧が表示されます。
+リストからサイクルを選択し、レンタル期間と日時を設定できます。
+カートに入れたサイクルを確認し、チェックアウトすることでレンタルが完了します。
+レンタル履歴はアカウントページから確認できます。
 
-## Getting Started
+#主な機能
+Firebase Authentication を使用したユーザー認証（email, google）
+Firestore を使用した自転車とレンタルデータの管理
+サイクルの一覧表示、詳細表示
+カートへの追加、レンタル期間と日時の設定
+チェックアウトによるレンタルデータの登録
+レンタル履歴の表示
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#使用技術
+Flutter
+Firebase Authentication
+Cloud Firestore
+Firebase storage
+GetX 状態管理
