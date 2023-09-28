@@ -47,7 +47,6 @@ class FirebaseService {
           .orderBy('rentalStartDate', descending: true)
           .where('rentalUserID', isEqualTo: uid)
           .get();
-
       return snapshot.docs;
     } catch (error) {
       print(error);
@@ -88,7 +87,6 @@ class FirebaseService {
 // firestore admin check
   Future<bool> getIsAdmin(String uid) async {
     DocumentSnapshot doc = await db.collection('userData').doc(uid).get();
-
     if (doc.exists) {
       return (doc.data() as Map<String, dynamic>)['isAdmin'] ?? false;
     }
@@ -174,9 +172,7 @@ class FirebaseService {
     );
     if (imageSavedData == null) return false;
     List<dynamic> images = [imageSavedData];
-
     String jsonImages = jsonEncode(images);
-
     var result = await db.collection('items').doc(bicycle.productId).set({
       'productName': bicycle.productName,
       'description': bicycle.description,
@@ -213,12 +209,9 @@ class FirebaseService {
       fileExtension = '.png';
     }
     String filePath = 'images/$productId/$fileName$fileExtension';
-
     SettableMetadata metadata = SettableMetadata(contentType: contentType);
-
     Reference reference = FirebaseStorage.instance.ref(filePath);
     UploadTask uploadTask = reference.putData(imageMemory, metadata);
-
     TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
     String downloadUrl = await snapshot.ref.getDownloadURL();
 
@@ -327,17 +320,12 @@ class FirebaseService {
     try {
       Bicycle? bicycleData = await fetchBicycleData(productId);
       if (bicycleData == null) return false;
-
       Map<String, dynamic> imagesData = (bicycleData.images)[index];
       String? deleteFilePath = imagesData['filePath'];
-
       await FirebaseStorage.instance.ref(deleteFilePath).delete();
-
       List<dynamic> imagesList = bicycleData.images;
       imagesList.removeAt(index);
-
       String jsonImages = jsonEncode(imagesList);
-
       await db.collection('items').doc(productId).update({
         'images': jsonImages,
       });
@@ -352,13 +340,11 @@ class FirebaseService {
   Future<Map<String, dynamic>?> pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
-
     if (pickedFile != null) {
       int size = await pickedFile.length();
       if (size <= 1024 * 1024) {
         final memory = await pickedFile.readAsBytes();
         final imageFormat = pickedFile.path.split('.').last;
-
         return {'image': memory, 'format': imageFormat};
       } else {
         Get.snackbar(

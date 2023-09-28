@@ -16,13 +16,13 @@ Widget cartPeriodCount() {
           color: Colors.grey.withOpacity(0.5),
           spreadRadius: 2,
           blurRadius: 3,
-          offset: Offset(3, 3), // changes position of shadow
+          offset: Offset(3, 3),
         ),
         BoxShadow(
           color: Colors.white.withOpacity(0.5),
           spreadRadius: 2,
           blurRadius: 3,
-          offset: Offset(-3, -3), // changes position of shadow
+          offset: Offset(-3, -3),
         ),
       ],
     ),

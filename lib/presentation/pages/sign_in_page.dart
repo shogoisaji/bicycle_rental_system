@@ -125,7 +125,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () {
                       authController.login('kato@gmail.com', 'passpass');
                     },
-                    child: Text('Test general user')),
+                    child: Text('sample general user')),
                 SizedBox(
                   height: 20,
                 ),

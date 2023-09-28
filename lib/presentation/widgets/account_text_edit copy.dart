@@ -13,7 +13,6 @@ Widget accountTextEdit(String item, TextEditingController controller) {
         width: double.infinity,
         margin: EdgeInsets.only(bottom: 8),
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        // height: 50,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: Colors.white,

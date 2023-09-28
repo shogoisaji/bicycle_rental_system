@@ -50,7 +50,6 @@ class _DetailPageState extends State<ListPage> {
   Widget build(BuildContext context) {
     var f = NumberFormat("#,###");
     MyDateFormat dateFormat = MyDateFormat();
-
     double mWidth = MediaQuery.of(context).size.width;
     double index1padding = 100;
     int columnCount = 1;
@@ -71,13 +70,11 @@ class _DetailPageState extends State<ListPage> {
         firstDate: DateTime(2023),
         lastDate: DateTime(2033),
       );
-
       if (selectedDate != null) {
         final TimeOfDay? selectedTime = await showTimePicker(
           context: context,
           initialTime: TimeOfDay.now(),
         );
-
         if (selectedTime != null) {
           DateTime selectedDateTime = DateTime(
               selectedDate.year,
@@ -85,7 +82,6 @@ class _DetailPageState extends State<ListPage> {
               selectedDate.day,
               selectedTime.hour,
               selectedTime.minute);
-
           stateController.rentStartDate.value = selectedDateTime;
         }
       }
@@ -266,7 +262,6 @@ class _DetailPageState extends State<ListPage> {
                                               ),
                                             ));
                                       }
-
                                       return StaggeredGridTile.count(
                                           crossAxisCellCount: 2,
                                           mainAxisCellCount: 2,
@@ -346,8 +341,7 @@ class _DetailPageState extends State<ListPage> {
                                         color: Colors.white.withOpacity(0.5),
                                         spreadRadius: 2,
                                         blurRadius: 3,
-                                        offset: Offset(0,
-                                            -3), // changes position of shadow
+                                        offset: Offset(0, -3),
                                       ),
                                     ],
                                   ),
@@ -373,16 +367,14 @@ class _DetailPageState extends State<ListPage> {
                                                         .withOpacity(0.5),
                                                     spreadRadius: 2,
                                                     blurRadius: 3,
-                                                    offset: Offset(3,
-                                                        3), // changes position of shadow
+                                                    offset: Offset(3, 3),
                                                   ),
                                                   BoxShadow(
                                                     color: Colors.white
                                                         .withOpacity(0.5),
                                                     spreadRadius: 2,
                                                     blurRadius: 3,
-                                                    offset: Offset(-3,
-                                                        -3), // changes position of shadow
+                                                    offset: Offset(-3, -3),
                                                   ),
                                                 ],
                                               ),
@@ -433,16 +425,14 @@ class _DetailPageState extends State<ListPage> {
                                                         .withOpacity(0.5),
                                                     spreadRadius: 2,
                                                     blurRadius: 3,
-                                                    offset: Offset(3,
-                                                        3), // changes position of shadow
+                                                    offset: Offset(3, 3),
                                                   ),
                                                   BoxShadow(
                                                     color: Colors.white
                                                         .withOpacity(0.5),
                                                     spreadRadius: 2,
                                                     blurRadius: 3,
-                                                    offset: Offset(-3,
-                                                        -3), // changes position of shadow
+                                                    offset: Offset(-3, -3),
                                                   ),
                                                 ],
                                               ),
@@ -469,16 +459,14 @@ class _DetailPageState extends State<ListPage> {
                                                         .withOpacity(0.5),
                                                     spreadRadius: 2,
                                                     blurRadius: 3,
-                                                    offset: Offset(3,
-                                                        3), // changes position of shadow
+                                                    offset: Offset(3, 3),
                                                   ),
                                                   BoxShadow(
                                                     color: Colors.white
                                                         .withOpacity(0.5),
                                                     spreadRadius: 2,
                                                     blurRadius: 3,
-                                                    offset: Offset(-3,
-                                                        -3), // changes position of shadow
+                                                    offset: Offset(-3, -3),
                                                   ),
                                                 ],
                                               ),

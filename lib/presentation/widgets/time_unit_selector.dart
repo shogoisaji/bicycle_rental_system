@@ -19,7 +19,7 @@ Widget timeUintSelector() {
             color: Colors.grey.withOpacity(0.6),
             spreadRadius: 1.5,
             blurRadius: 4,
-            offset: Offset(0, 2), // changes position of shadow
+            offset: Offset(0, 2),
           ),
         ],
       ),

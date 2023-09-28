@@ -40,7 +40,6 @@ class _CartIntoCardState extends State<CartIntoCard> {
                 Column(
                   children: [
                     Container(
-                      // margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       decoration: BoxDecoration(
                         color: MyTheme.grey,
                         borderRadius: BorderRadius.circular(20),

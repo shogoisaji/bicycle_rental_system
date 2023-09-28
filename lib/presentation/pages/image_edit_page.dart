@@ -47,7 +47,6 @@ class _ImageEditPageState extends State<ImageEditPage> {
         body: SingleChildScrollView(
           child: Center(
             child: Container(
-                // margin: EdgeInsets.only(top: 30),
                 constraints: BoxConstraints(maxWidth: 500),
                 child: FutureBuilder(
                     future: firebase.fetchDocumentData(widget.productId),
@@ -62,7 +61,6 @@ class _ImageEditPageState extends State<ImageEditPage> {
                               aspectRatio: 1,
                               child: Container(
                                 constraints: BoxConstraints(maxWidth: 400),
-                                // width: mWidth - 50,
                                 margin: EdgeInsets.all(32),
                                 padding: EdgeInsets.all(8),
                                 child: ClipRRect(
@@ -80,13 +78,11 @@ class _ImageEditPageState extends State<ImageEditPage> {
                                         color: Colors.grey.withOpacity(0.6),
                                         spreadRadius: 1.5,
                                         blurRadius: 4,
-                                        offset: Offset(
-                                            0, 1), // changes position of shadow
+                                        offset: Offset(0, 1),
                                       ),
                                     ]),
                               ),
                             ),
-                            // SizedBox(height: 16),
                             Container(
                               padding: EdgeInsets.only(left: 8, top: 10),
                               height: 150,

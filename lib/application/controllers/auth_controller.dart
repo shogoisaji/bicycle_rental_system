@@ -66,7 +66,7 @@ class AuthController extends GetxController {
     } catch (e) {
       Get.snackbar(
         "Error",
-        e.toString(), // errorMessageを表示
+        e.toString(),
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -79,7 +79,7 @@ class AuthController extends GetxController {
     } catch (e) {
       Get.snackbar(
         "Error",
-        e.toString(), // errorMessageを表示
+        e.toString(),
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -111,7 +111,7 @@ class AuthController extends GetxController {
       print(e);
       Get.snackbar(
         "Error",
-        e.toString(), // errorMessageを表示
+        e.toString(),
         backgroundColor: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
       );
